@@ -9,9 +9,8 @@ export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Hindari hydration mismatch
   useEffect(() => setMounted(true), []);
-  if (!mounted) return <div className="w-10 h-5" />;
+  if (!mounted) return <div className="w-11 h-6" />;
 
   const isDark = theme === "dark";
 
@@ -19,7 +18,8 @@ export default function ThemeToggle() {
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label="Toggle dark mode"
-      className="relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 cursor-pointer"
+      // Tambahkan flex dan items-center agar isi di dalamnya bisa center secara vertikal dengan mudah
+      className="relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 cursor-pointer flex items-center"
       style={{
         backgroundColor: isDark
           ? "rgba(255,255,255,0.25)"
@@ -27,10 +27,16 @@ export default function ThemeToggle() {
         border: "1.5px solid rgba(255,255,255,0.35)",
       }}
     >
-      {/* Track */}
+      {/* Knob/Bulatan */}
       <motion.div
-        className="absolute top-0.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
-        animate={{ x: isDark ? 20 : 2 }}
+        // Hapus absolute top-0.5, biarkan flex parent yang mengatur posisi vertikalnya
+        className="w-4.5 h-4.5 rounded-full bg-white flex items-center justify-center shadow-sm"
+        // Gunakan padding/margin kecil agar tidak menempel border
+        initial={false}
+        animate={{
+          // 2px dari kiri saat light, dan hitungan yang pas untuk dark
+          x: isDark ? 20 : 2,
+        }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -42,8 +48,8 @@ export default function ThemeToggle() {
               exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
               transition={{ duration: 0.2 }}
               xmlns="http://www.w3.org/2000/svg"
-              width="11"
-              height="11"
+              width="10"
+              height="10"
               viewBox="0 0 24 24"
               fill="#124076"
             >
@@ -57,8 +63,8 @@ export default function ThemeToggle() {
               exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
               transition={{ duration: 0.2 }}
               xmlns="http://www.w3.org/2000/svg"
-              width="11"
-              height="11"
+              width="10"
+              height="10"
               viewBox="0 0 24 24"
               fill="none"
               stroke="#124076"

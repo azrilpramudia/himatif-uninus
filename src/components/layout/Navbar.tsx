@@ -42,22 +42,13 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* ===== Logo ===== */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
-            {/* Jika sudah ada file logo, ganti dengan Image */}
-            {/* <Image
+            <Image
               src={siteConfig.logo}
               alt={siteConfig.logoAlt}
-              width={36}
-              height={36}
+              width={40}
+              height={40}
               className="object-contain"
-            /> */}
-
-            {/* Logo placeholder — ganti saat logo sudah ada */}
-            <div className="w-9 h-9 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0 transition-all duration-200 group-hover:bg-white/20">
-              <span className="text-white font-bold text-sm tracking-tight">
-                H
-              </span>
-            </div>
-
+            />
             <div className="flex flex-col leading-none">
               <span className="text-white font-semibold text-base tracking-wide">
                 HIMATIF
@@ -69,7 +60,7 @@ export default function Navbar() {
           </Link>
 
           {/* ===== Desktop Nav ===== */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex justify-end items-center gap-1 w-full me-4">
             {publicNavItems.map((item) => {
               const isActive = pathname === item.href;
 
