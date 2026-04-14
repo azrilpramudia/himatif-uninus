@@ -102,18 +102,19 @@ export default function Navbar() {
             <button
               onClick={() => setIsMobileOpen((prev) => !prev)}
               aria-label="Toggle mobile menu"
-              className="md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-white/10 transition-colors"
+              className="md:hidden flex flex-col justify-center items-center gap-1.25 w-9 h-9 rounded-lg hover:bg-white/10 transition-colors relative"
             >
               <motion.span
                 animate={
                   isMobileOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }
                 }
                 transition={{ duration: 0.2 }}
-                className="block w-5 h-0.5 bg-white rounded-full origin-center"
+                // Gunakan h-[2px] agar lebih presisi dibanding h-0.5
+                className="block w-5 h-0.5 bg-white rounded-full"
               />
               <motion.span
                 animate={
-                  isMobileOpen ? { opacity: 0, x: -8 } : { opacity: 1, x: 0 }
+                  isMobileOpen ? { opacity: 0, x: -10 } : { opacity: 1, x: 0 }
                 }
                 transition={{ duration: 0.2 }}
                 className="block w-5 h-0.5 bg-white rounded-full"
@@ -123,7 +124,7 @@ export default function Navbar() {
                   isMobileOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }
                 }
                 transition={{ duration: 0.2 }}
-                className="block w-5 h-0.5 bg-white rounded-full origin-center"
+                className="block w-5 h-0.5 bg-white rounded-full"
               />
             </button>
           </div>
