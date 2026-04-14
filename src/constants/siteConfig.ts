@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     "Himpunan Mahasiswa Teknik Informatika Universitas Islam Nusantara — wadah pengembangan akademik, kreativitas, dan kepemimpinan mahasiswa informatika.",
   url: "https://himatif-uninus.org",
-  logo: "/images/logo/himatif-logo.png",
+  logo: "/public/images/himatif-logo.svg",
   logoAlt: "Logo Himatif Uninus",
   email: "himatif@uninus.ac.id",
   phone: "+62 xxx-xxxx-xxxx",

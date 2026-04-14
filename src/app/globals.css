@@ -1,18 +1,33 @@
-/* src/app/globals.css */
 @import "tailwindcss";
 
 @theme {
-  /* === Color Palette Himatif === */
   --color-primary: #124076;
   --color-primary-blue-soft: #f1f3ff;
   --color-primary-light: #fbfbfb;
   --color-primary-dark: #0d0d0d;
   --color-accent: #e8f4fd;
-
-  /* === Typography === */
-  --font-sans: "Inter", sans-serif;
-  --font-heading: "Poppins", sans-serif;
-
-  /* === Spacing Custom === */
+  --font-poppins: var(--font-poppins), sans-serif;
   --spacing-section: 5rem;
+}
+
+/* Light mode */
+:root {
+  --bg-page: #fbfbfb;
+  --text-primary: #0d0d0d;
+  --text-secondary: #4a5568;
+}
+
+/* Dark mode */
+.dark {
+  --bg-page: #0d1117;
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
