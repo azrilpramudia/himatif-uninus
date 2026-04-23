@@ -19,11 +19,11 @@ export type FooterColumn = {
 
 // ===== Public Navigation =====
 export const publicNavItems: NavGroup[] = [
-  { label: "Beranda", href: "/" },
-  { label: "Tentang", href: "/about" },
-  { label: "Kegiatan", href: "/events" },
-  { label: "Galeri", href: "/gallery" },
-  { label: "Kontak", href: "/contact" },
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Events", href: "/events" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
 ];
 
 // ===== Footer Columns =====

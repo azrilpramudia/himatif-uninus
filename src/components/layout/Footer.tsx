@@ -1,4 +1,3 @@
-// src/components/layout/Footer.tsx
 "use client";
 
 import Link from "next/link";
@@ -80,9 +79,6 @@ function FooterBottom() {
       <p className="text-white/35 text-xs text-center sm:text-left">
         © {currentYear} {siteConfig.fullName}. All rights reserved.
       </p>
-      {/* <p className="text-white/35 text-xs text-center sm:text-right">
-        {siteConfig.university}
-      </p> */}
     </motion.div>
   );
 }
@@ -99,7 +95,7 @@ export default function Footer() {
           viewport={{ once: true, margin: "-60px" }}
           className="flex flex-col gap-8 md:grid md:grid-cols-3 md:gap-8"
         >
-          {/* ===== Kiri — Logo & Tagline ===== */}
+          {/* ===== Left — Logo & Tagline ===== */}
           <div className="flex flex-col gap-3 md:col-span-1">
             <FooterLogo />
             <motion.p
@@ -110,12 +106,7 @@ export default function Footer() {
             </motion.p>
           </div>
 
-          {/* ===== Kanan — Dua Kolom Nav ===== */}
-          {/* 
-            Key fix: pakai grid 2 kolom yang konsisten di semua breakpoint.
-            Di mobile: 2 kolom sejajar di bawah logo.
-            Di desktop: masuk ke grid 3 kolom sebagai col-span-2.
-          */}
+          {/* ===== Right - Navigation Footer ===== */}
           <div className="grid grid-cols-2 gap-6 md:col-span-2 md:gap-12 md:justify-items-start lg:justify-items-end">
             {footerColumns.map((column) => (
               <FooterNavColumn
@@ -126,8 +117,6 @@ export default function Footer() {
             ))}
           </div>
         </motion.div>
-
-        {/* ===== Bottom Bar ===== */}
         <FooterBottom />
       </div>
     </footer>

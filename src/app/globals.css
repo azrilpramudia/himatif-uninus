@@ -1,32 +1,56 @@
 @import "tailwindcss";
 
 @theme {
+  /* === Color Palette === */
   --color-primary: #124076;
   --color-primary-blue-soft: #f1f3ff;
   --color-primary-light: #fbfbfb;
   --color-primary-dark: #0d0d0d;
   --color-accent: #e8f4fd;
-  --font-poppins: var(--font-poppins), sans-serif;
+
+  /* === Typography === */
+  --font-poppins: "Poppins", sans-serif;
+
+  /* === Spacing === */
   --spacing-section: 5rem;
 }
 
-/* Light mode */
+/* ===== Light Mode ===== */
 :root {
+  color-scheme: light;
+
+  /* Background & Text */
   --bg-page: #fbfbfb;
-  --text-primary: #0d0d0d;
-  --text-secondary: #4a5568;
+  --text-body: #0d0d0d;
+  --text-muted: #374151;
+
+  /* Hero Section */
+  --hero-text-heading: #0d0d0d;
+  --hero-text-body: #374151;
+  --hero-btn-outline-text: #124076;
+  --hero-btn-outline-border: rgba(18, 64, 118, 0.3);
 }
 
-/* Dark mode */
+/* ===== Dark Mode ===== */
 .dark {
+  color-scheme: dark;
+
+  /* Background & Text */
   --bg-page: #0d1117;
-  --text-primary: #f0f6fc;
-  --text-secondary: #8b949e;
+  --text-body: #f0f6fc;
+  --text-muted: #8b949e;
+
+  /* Hero Section */
+  --hero-text-heading: #ffffff;
+  --hero-text-body: rgba(255, 255, 255, 0.6);
+  --hero-btn-outline-text: #ffffff;
+  --hero-btn-outline-border: rgba(255, 255, 255, 0.3);
 }
 
+/* ===== Base Body ===== */
 body {
   background-color: var(--bg-page);
-  color: var(--text-primary);
+  color: var(--text-body);
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
