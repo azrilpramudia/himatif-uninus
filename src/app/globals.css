@@ -1,17 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  /* === Color Palette === */
   --color-primary: #124076;
   --color-primary-blue-soft: #f1f3ff;
   --color-primary-light: #fbfbfb;
   --color-primary-dark: #0d0d0d;
   --color-accent: #e8f4fd;
-
-  /* === Typography === */
   --font-poppins: "Poppins", sans-serif;
-
-  /* === Spacing === */
   --spacing-section: 5rem;
 }
 
@@ -19,12 +14,15 @@
 :root {
   color-scheme: light;
 
-  /* Background & Text */
-  --bg-page: #fbfbfb;
+  /* Background */
+  --bg-page: #f1f3ff; /* primary-blue-soft — hero & section ganjil */
+  --bg-section-alt: #fbfbfb; /* primary-light — section genap */
+
+  /* Text */
   --text-body: #0d0d0d;
   --text-muted: #374151;
 
-  /* Hero Section */
+  /* Hero */
   --hero-text-heading: #0d0d0d;
   --hero-text-body: #374151;
   --hero-btn-outline-text: #124076;
@@ -35,19 +33,22 @@
 .dark {
   color-scheme: dark;
 
-  /* Background & Text */
-  --bg-page: #0d1117;
-  --text-body: #f0f6fc;
-  --text-muted: #8b949e;
+  /* Background — SEMUA section pakai #0d0d0d tanpa kecuali */
+  --bg-page: #0d0d0d;
+  --bg-section-alt: #0d0d0d;
 
-  /* Hero Section */
+  /* Text */
+  --text-body: #fbfbfb;
+  --text-muted: #94a3b8;
+
+  /* Hero */
   --hero-text-heading: #ffffff;
   --hero-text-body: rgba(255, 255, 255, 0.6);
   --hero-btn-outline-text: #ffffff;
   --hero-btn-outline-border: rgba(255, 255, 255, 0.3);
 }
 
-/* ===== Base Body ===== */
+/* ===== Base ===== */
 body {
   background-color: var(--bg-page);
   color: var(--text-body);

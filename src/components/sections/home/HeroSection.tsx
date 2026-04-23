@@ -2,13 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { siteConfig } from "@/constants/siteConfig";
 import { fadeUpContainer, fadeUpItem } from "@/lib/animations";
 
 export default function HeroSection() {
+  const [isOutlineHovered, setIsOutlineHovered] = useState(false);
+
   return (
-    <section className="bg-primary-blue-soft dark:bg-primary/10 min-h-[calc(100vh-4rem)] flex items-center">
+    <section
+      className="min-h-[calc(100vh-4rem)] flex items-center"
+      style={{ backgroundColor: "var(--bg-page)" }}
+    >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full py-16 md:py-20">
         <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-10 md:gap-8">
           {/* ===== Kiri — Text Content ===== */}
@@ -43,13 +49,13 @@ export default function HeroSection() {
               variants={fadeUpItem}
               className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start mt-2"
             >
-              {/* Primary Button*/}
+              {/* Primary Button */}
               <Link
                 href="/events"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
                 style={{
-                  backgroundColor: "var(--color-primary)",
-                  color: "var(--color-primary-light)",
+                  backgroundColor: "#124076",
+                  color: "#fbfbfb",
                 }}
               >
                 Lihat Kegiatan
@@ -60,9 +66,18 @@ export default function HeroSection() {
                 href="/about"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl border-2 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                 style={{
-                  color: "var(--hero-btn-outline-text)",
-                  borderColor: "var(--hero-btn-outline-border)",
+                  color: isOutlineHovered
+                    ? "#fbfbfb"
+                    : "var(--hero-btn-outline-text)",
+                  borderColor: isOutlineHovered
+                    ? "#124076"
+                    : "var(--hero-btn-outline-border)",
+                  backgroundColor: isOutlineHovered ? "#124076" : "transparent",
+                  transition:
+                    "background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease",
                 }}
+                onMouseEnter={() => setIsOutlineHovered(true)}
+                onMouseLeave={() => setIsOutlineHovered(false)}
               >
                 Tentang Kami
               </Link>
