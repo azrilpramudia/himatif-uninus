@@ -1,3 +1,5 @@
+import { siteConfig } from "./siteConfig";
+
 export type NavItem = {
   label: string;
   href: string;
@@ -10,27 +12,48 @@ export type NavGroup = {
   children?: NavItem[];
 };
 
+export type FooterColumn = {
+  title: string;
+  links: NavItem[];
+};
+
 // ===== Public Navigation =====
 export const publicNavItems: NavGroup[] = [
+  { label: "Beranda", href: "/" },
+  { label: "Tentang", href: "/about" },
+  { label: "Kegiatan", href: "/events" },
+  { label: "Galeri", href: "/gallery" },
+  { label: "Kontak", href: "/contact" },
+];
+
+// ===== Footer Columns =====
+export const footerColumns: FooterColumn[] = [
   {
-    label: "Home",
-    href: "/",
+    title: "Sitemap",
+    links: [
+      { label: "Home", href: "/" },
+      { label: "About", href: "/about" },
+      { label: "Events", href: "/events" },
+      { label: "Gallery", href: "/gallery" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
   {
-    label: "About",
-    href: "/about",
-  },
-  {
-    label: "Events",
-    href: "/events",
-  },
-  {
-    label: "Gallery",
-    href: "/gallery",
-  },
-  {
-    label: "Contact",
-    href: "/contact",
+    title: "Contact Us",
+    links: [
+      {
+        label: "Instagram",
+        href: siteConfig.socialMedia.instagram,
+        isExternal: true,
+      },
+      { label: "Email", href: `mailto:${siteConfig.email}`, isExternal: true },
+      { label: "WhatsApp", href: siteConfig.whatsapp, isExternal: true },
+      {
+        label: "YouTube",
+        href: siteConfig.socialMedia.youtube,
+        isExternal: true,
+      },
+    ],
   },
 ];
 
@@ -38,7 +61,7 @@ export const publicNavItems: NavGroup[] = [
 export type AdminNavItem = {
   label: string;
   href: string;
-  icon: string; // nama icon — dipakai di komponen Sidebar
+  icon: string;
 };
 
 export type AdminNavGroup = {
@@ -50,83 +73,20 @@ export const adminNavGroups: AdminNavGroup[] = [
   {
     group: "Utama",
     items: [
-      {
-        label: "Dashboard",
-        href: "/dashboard",
-        icon: "LayoutDashboard",
-      },
+      { label: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
     ],
   },
   {
     group: "Konten",
     items: [
-      {
-        label: "Kegiatan",
-        href: "/dashboard/events",
-        icon: "CalendarDays",
-      },
-      {
-        label: "Galeri",
-        href: "/dashboard/gallery",
-        icon: "Images",
-      },
+      { label: "Kegiatan", href: "/dashboard/events", icon: "CalendarDays" },
+      { label: "Galeri", href: "/dashboard/gallery", icon: "Images" },
     ],
   },
   {
     group: "Pengaturan",
     items: [
-      {
-        label: "Profil",
-        href: "/dashboard/profile",
-        icon: "UserCircle",
-      },
-    ],
-  },
-];
-
-// ===== Footer Navigation =====
-export type FooterNavGroup = {
-  group: string;
-  items: NavItem[];
-};
-
-export const footerNavGroups: FooterNavGroup[] = [
-  {
-    group: "Halaman",
-    items: [
-      { label: "Home", href: "/" },
-      { label: "About", href: "/about" },
-      { label: "Events", href: "/events" },
-      { label: "Gallery", href: "/gallery" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    group: "Organisasi",
-    items: [
-      { label: "Sejarah", href: "/about#history" },
-      { label: "Struktur Organisasi", href: "/about#structure" },
-      { label: "Program Kerja", href: "/about#proker" },
-    ],
-  },
-  {
-    group: "Media",
-    items: [
-      {
-        label: "Instagram",
-        href: "https://instagram.com/himatif_uninus",
-        isExternal: true,
-      },
-      {
-        label: "YouTube",
-        href: "https://youtube.com/@himatif_uninus",
-        isExternal: true,
-      },
-      {
-        label: "GitHub",
-        href: "https://github.com/himatif-uninus",
-        isExternal: true,
-      },
+      { label: "Profil", href: "/dashboard/profile", icon: "UserCircle" },
     ],
   },
 ];

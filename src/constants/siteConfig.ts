@@ -2,7 +2,6 @@ export const siteConfig = {
   name: "Himatif Uninus",
   fullName: "Himpunan Mahasiswa Teknik Informatika",
   university: "Universitas Islam Nusantara",
-  acronym: "Himatif Uninus",
   description:
     "Himpunan Mahasiswa Teknik Informatika Universitas Islam Nusantara — wadah pengembangan akademik, kreativitas, dan kepemimpinan mahasiswa informatika.",
   url: "https://himatif-uninus.org",
@@ -10,6 +9,7 @@ export const siteConfig = {
   logoAlt: "Logo Himatif Uninus",
   email: "himatif@uninus.ac.id",
   phone: "+62 xxx-xxxx-xxxx",
+  whatsapp: "https://wa.me/62xxxxxxxxxx",
   address: "Jl. Soekarno Hatta No.530, Bandung, Jawa Barat",
   foundedYear: 2010,
   socialMedia: {
@@ -23,7 +23,7 @@ export const siteConfig = {
     defaultTitle: "Himatif Uninus",
     titleTemplate: "%s | Himatif Uninus",
     defaultDescription:
-      "Himpunan Mahasiswa Teknik Informatika Universitas Islam Nusantara — wadah pengembangan akademik, kreativitas, dan kepemimpinan mahasiswa informatika.",
+      "Himpunan Mahasiswa Teknik Informatika Universitas Islam Nusantara.",
     keywords: [
       "Himatif",
       "Uninus",
