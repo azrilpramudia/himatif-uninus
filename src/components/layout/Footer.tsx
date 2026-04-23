@@ -1,3 +1,4 @@
+// src/components/layout/Footer.tsx
 "use client";
 
 import Link from "next/link";
@@ -11,8 +12,8 @@ import { cn } from "@/lib/utils";
 // ===== Footer Logo =====
 function FooterLogo() {
   return (
-    <motion.div variants={fadeUpItem} className="flex items-center gap-4">
-      <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ">
+    <motion.div variants={fadeUpItem} className="flex items-center gap-3">
+      <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center shrink-0">
         <Image
           src={siteConfig.logo}
           alt={siteConfig.logoAlt}
@@ -22,10 +23,10 @@ function FooterLogo() {
         />
       </div>
       <div className="flex flex-col">
-        <span className="text-white font-bold text-xl leading-tight tracking-wide">
+        <span className="text-white font-bold text-lg md:text-xl leading-tight tracking-wide">
           HIMATIF
         </span>
-        <span className="text-white font-semibold text-xl leading-tight tracking-wide">
+        <span className="text-white font-semibold text-lg md:text-xl leading-tight tracking-wide">
           UNINUS
         </span>
       </div>
@@ -41,12 +42,12 @@ type FooterNavColumnProps = {
 
 function FooterNavColumn({ title, links }: FooterNavColumnProps) {
   return (
-    <motion.div variants={fadeUpItem} className="flex flex-col gap-4">
-      <h3 className="text-white font-semibold text-sm tracking-widest uppercase">
+    <motion.div variants={fadeUpItem} className="flex flex-col gap-3">
+      <h3 className="text-white font-semibold text-xs tracking-widest uppercase">
         {title}
       </h3>
       <div className="w-full h-px bg-white/20" />
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-2.5">
         {links.map((link) => (
           <li key={link.href}>
             <Link
@@ -67,19 +68,21 @@ function FooterNavColumn({ title, links }: FooterNavColumnProps) {
   );
 }
 
-// ===== Footer Bottom Bar =====
+// ===== Footer Bottom =====
 function FooterBottom() {
   const currentYear = new Date().getFullYear();
 
   return (
     <motion.div
       variants={fadeUpItem}
-      className="border-t border-white/15 pt-5 mt-8 flex flex-col sm:flex-row items-center justify-between gap-2"
+      className="border-t border-white/15 pt-5 mt-8 flex flex-col items-center gap-1 sm:flex-row sm:justify-between"
     >
-      <p className="text-white/35 text-xs">
+      <p className="text-white/35 text-xs text-center sm:text-left">
         © {currentYear} {siteConfig.fullName}. All rights reserved.
       </p>
-      <p className="text-white/35 text-xs">{siteConfig.university}</p>
+      {/* <p className="text-white/35 text-xs text-center sm:text-right">
+        {siteConfig.university}
+      </p> */}
     </motion.div>
   );
 }
@@ -88,16 +91,16 @@ function FooterBottom() {
 export default function Footer() {
   return (
     <footer className="bg-primary">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-14 pb-8">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-10 md:pt-14 pb-8">
         <motion.div
           variants={fadeUpContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8"
+          className="flex flex-col gap-8 md:grid md:grid-cols-3 md:gap-8"
         >
-          {/* Kiri — Logo & Tagline */}
-          <div className="md:col-span-1 flex flex-col gap-5">
+          {/* ===== Kiri — Logo & Tagline ===== */}
+          <div className="flex flex-col gap-3 md:col-span-1">
             <FooterLogo />
             <motion.p
               variants={fadeUpItem}
@@ -107,8 +110,13 @@ export default function Footer() {
             </motion.p>
           </div>
 
-          {/* Kanan — Kolom Navigasi */}
-          <div className="md:col-span-2 grid grid-cols-2 gap-8 md:gap-12 lg:justify-items-end">
+          {/* ===== Kanan — Dua Kolom Nav ===== */}
+          {/* 
+            Key fix: pakai grid 2 kolom yang konsisten di semua breakpoint.
+            Di mobile: 2 kolom sejajar di bawah logo.
+            Di desktop: masuk ke grid 3 kolom sebagai col-span-2.
+          */}
+          <div className="grid grid-cols-2 gap-6 md:col-span-2 md:gap-12 md:justify-items-start lg:justify-items-end">
             {footerColumns.map((column) => (
               <FooterNavColumn
                 key={column.title}
@@ -119,6 +127,7 @@ export default function Footer() {
           </div>
         </motion.div>
 
+        {/* ===== Bottom Bar ===== */}
         <FooterBottom />
       </div>
     </footer>
