@@ -111,7 +111,6 @@ export default function Footer() {
             {footerColumns.map((column) => (
               <div key={column.title} className="min-w-30">
                 {" "}
-                {/* Beri min-width agar lebar kolom konsisten */}
                 <FooterNavColumn title={column.title} links={column.links} />
               </div>
             ))}
