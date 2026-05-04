@@ -87,13 +87,13 @@ function FooterBottom() {
 export default function Footer() {
   return (
     <footer className="bg-primary">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-10 md:pt-14 pb-8">
+      <div className="max-w-7xl mx-auto px-8 lg:px-8 pt-10 md:pt-14 pb-8">
         <motion.div
           variants={fadeUpContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="flex flex-col gap-8 md:grid md:grid-cols-3 md:gap-8"
+          className="flex flex-col gap-10 md:grid md:grid-cols-3 md:gap-8"
         >
           {/* ===== Left — Logo & Tagline ===== */}
           <div className="flex flex-col gap-3 md:col-span-1">
@@ -107,15 +107,15 @@ export default function Footer() {
           </div>
 
           {/* ===== Right - Navigation Footer ===== */}
-          <div className="flex flex-row justify-end gap-12 md:col-span-2">
+          <div className="grid grid-cols-2 gap-6 md:col-span-2 md:flex md:flex-row md:justify-end">
             {footerColumns.map((column) => (
-              <div key={column.title} className="min-w-30">
-                {" "}
+              <div key={column.title} className="md:min-w-36">
                 <FooterNavColumn title={column.title} links={column.links} />
               </div>
             ))}
           </div>
         </motion.div>
+
         <FooterBottom />
       </div>
     </footer>
