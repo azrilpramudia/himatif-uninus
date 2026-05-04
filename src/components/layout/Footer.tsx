@@ -107,13 +107,13 @@ export default function Footer() {
           </div>
 
           {/* ===== Right - Navigation Footer ===== */}
-          <div className="grid grid-cols-2 gap-6 md:col-span-2 md:gap-12 md:justify-items-start lg:justify-items-end">
+          <div className="flex flex-row justify-end gap-12 md:col-span-2">
             {footerColumns.map((column) => (
-              <FooterNavColumn
-                key={column.title}
-                title={column.title}
-                links={column.links}
-              />
+              <div key={column.title} className="min-w-30">
+                {" "}
+                {/* Beri min-width agar lebar kolom konsisten */}
+                <FooterNavColumn title={column.title} links={column.links} />
+              </div>
             ))}
           </div>
         </motion.div>
