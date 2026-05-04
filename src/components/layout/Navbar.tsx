@@ -80,7 +80,9 @@ export default function Navbar() {
                   {isActive && (
                     <motion.div
                       layoutId="navbar-active"
-                      className="absolute inset-0 bg-white/15 rounded-lg"
+                      initial={false}
+                      className="absolute inset-0 bg-white/15 rounded-lg -z-10"
+                      style={{ originY: "0px" }}
                       transition={{
                         type: "spring",
                         stiffness: 380,

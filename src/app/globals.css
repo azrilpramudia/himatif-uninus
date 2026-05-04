@@ -15,8 +15,8 @@
   color-scheme: light;
 
   /* Background */
-  --bg-page: #f1f3ff; /* primary-blue-soft — hero & section ganjil */
-  --bg-section-alt: #fbfbfb; /* primary-light — section genap */
+  --bg-page: #f1f3ff;
+  --bg-section-alt: #fbfbfb;
 
   /* Text */
   --text-body: #0d0d0d;
@@ -33,7 +33,6 @@
 .dark {
   color-scheme: dark;
 
-  /* Background — SEMUA section pakai #0d0d0d tanpa kecuali */
   --bg-page: #0d0d0d;
   --bg-section-alt: #0d0d0d;
 

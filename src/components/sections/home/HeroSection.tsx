@@ -54,8 +54,8 @@ export default function HeroSection() {
                 href="/events"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
                 style={{
-                  backgroundColor: "#124076",
-                  color: "#fbfbfb",
+                  backgroundColor: "var(--color-primary)",
+                  color: "var(--color-primary-light)",
                 }}
               >
                 Lihat Kegiatan
