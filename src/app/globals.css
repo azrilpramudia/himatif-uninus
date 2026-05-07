@@ -17,6 +17,7 @@
   /* Background */
   --bg-page: #f1f3ff;
   --bg-section-alt: #fbfbfb;
+  --bg-card: #ffffff;
 
   /* Text */
   --text-body: #0d0d0d;
@@ -35,6 +36,7 @@
 
   --bg-page: #0d0d0d;
   --bg-section-alt: #0d0d0d;
+  --bg-card: #1a1a1a;
 
   /* Text */
   --text-body: #fbfbfb;
