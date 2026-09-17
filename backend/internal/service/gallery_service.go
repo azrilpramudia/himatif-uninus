@@ -3,8 +3,8 @@ package service
 import (
 	"errors"
 
+	"github.com/azrilpramudia/himatif-uninus/helper"
 	domain "github.com/azrilpramudia/himatif-uninus/internal/domain/entity"
-	"github.com/azrilpramudia/himatif-uninus/internal/helper"
 	"github.com/azrilpramudia/himatif-uninus/internal/repository"
 )
 
