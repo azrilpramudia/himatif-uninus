@@ -67,7 +67,7 @@ func (h *EventHandler) Update(c *gin.Context) {
 
 func (h *EventHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.service.Detete(id); err != nil {
+	if err := h.service.Delete(id); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
