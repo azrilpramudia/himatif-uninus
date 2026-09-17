@@ -11,12 +11,12 @@ type AuthHandler struct {
 	service service.AuthService
 }
 
-func NewAuthService(service service.AuthService) *AuthHandler {
+func NewAuthHandler(service service.AuthService) *AuthHandler {
 	return &AuthHandler{service}
 }
 
 type LoginInput struct {
-	Email string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 }
 
@@ -40,8 +40,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "login successfull",
-		"token":	token,
+		"message": "login successful",
+		"token":   token,
 	})
 }
 
@@ -60,6 +60,6 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "register successful",
-		"data":	user,
+		"data":    user,
 	})
 }

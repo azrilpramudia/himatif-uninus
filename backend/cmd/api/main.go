@@ -1,3 +1,4 @@
+// cmd/api/main.go
 package main
 
 import (
@@ -10,16 +11,19 @@ import (
 	"github.com/azrilpramudia/himatif-uninus/internal/repository"
 	"github.com/azrilpramudia/himatif-uninus/internal/service"
 	"github.com/azrilpramudia/himatif-uninus/router"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// load .env
-	if err := os.godotenv.Load(); err != nil {
+	// Load .env
+	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
+	// Connect database
 	config.ConnectDatabase()
 
+	// Auto migrate
 	if err := config.DB.AutoMigrate(
 		&domain.User{},
 		&domain.Event{},
@@ -28,26 +32,29 @@ func main() {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
-	userRepo := repository.NewUserRepository(config.DB)
-	eventRepo := repository.NewEventRepository(config.DB)
+	// ===== Repository Layer =====
+	userRepo    := repository.NewUserRepository(config.DB)
+	eventRepo   := repository.NewEventRepository(config.DB)
 	galleryRepo := repository.NewGalleryRepository(config.DB)
 
-	authService := service.NewAuthService(userRepo)
-	eventService := service.NewEventService(eventRepo)
-	galleryRepo := service.NewGalleryService(galleryRepo)
+	// ===== Service Layer =====
+	authSvc    := service.NewAuthService(userRepo)
+	eventSvc   := service.NewEventService(eventRepo)
+	gallerySvc := service.NewGalleryService(galleryRepo)
 
-	authHandler := handler.NewAuthHandler(authService)
-	eventHandler := handler.NewEventService(eventService)
-	galleryHandler := handler.NewGalleryHandler(galleryService)
+	// ===== Handler Layer =====
+	authHandler    := handler.NewAuthHandler(authSvc)
+	eventHandler   := handler.NewEventHandler(eventSvc)
+	galleryHandler := handler.NewGalleryHandler(gallerySvc)
 
-	// setup router
+	// ===== Router =====
 	r := router.SetupRouter(&router.Handlers{
-		Auth: authHandler,
-		Event: eventHandler,
+		Auth:    authHandler,
+		Event:   eventHandler,
 		Gallery: galleryHandler,
 	})
 
-	// start server
+	// ===== Start Server =====
 	port := os.Getenv("APP_PORT")
 	if port == "" {
 		port = "3000"

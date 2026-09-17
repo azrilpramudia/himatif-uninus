@@ -11,7 +11,7 @@ type EventHandler struct {
 	service service.EventService
 }
 
-func NewEventService(service service.EventService) *EventHandler {
+func NewEventHandler(service service.EventService) *EventHandler {
 	return &EventHandler{service}
 }
 
@@ -46,7 +46,10 @@ func (h *EventHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": event})
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "event created successfully",
+		"data":    event,
+	})
 }
 
 func (h *EventHandler) Update(c *gin.Context) {
@@ -62,7 +65,10 @@ func (h *EventHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": event})
+	c.JSON(http.StatusOK, gin.H{
+		"message": "event updated successfully",
+		"data":    event,
+	})
 }
 
 func (h *EventHandler) Delete(c *gin.Context) {
