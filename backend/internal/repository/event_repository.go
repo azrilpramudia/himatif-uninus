@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type EventRepositry interface {
+type EventRepository interface {
 	FindAll() ([]domain.Event, error)
 	FindByID(id string) (*domain.Event, error)
 	FindBySlug(slug string)	(*domain.Event, error)
@@ -18,7 +18,7 @@ type eventRepository struct {
 	db *gorm.DB
 }
 
-func NewEventRepository(db *gorm.DB) EventRepositry {
+func NewEventRepository(db *gorm.DB) EventRepository {
 	return &eventRepository{db}
 }
 
