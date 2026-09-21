@@ -63,6 +63,8 @@ func SetupRouter(h *Handlers) *gin.Engine {
 			// Gallery CRUD
 			adminGalleries := admin.Group("/galleries")
 			{
+				adminGalleries.GET("", h.Gallery.GetAll)
+				adminGalleries.GET("/:id", h.Gallery.GetByID)
 				adminGalleries.POST("", h.Gallery.Create)
 				adminGalleries.PUT("/:id", h.Gallery.Update)
 				adminGalleries.DELETE("/:id", h.Gallery.Delete)
