@@ -1,0 +1,787 @@
+openapi: 3.0.3
+info:
+  title: Himatif Uninus API
+  description: REST API untuk website Himpunan Mahasiswa Teknik Informatika Universitas Islam Nusantara
+  version: 1.0.0
+  contact:
+    name: Himatif Uninus
+    email: himatif@uninus.ac.id
+
+servers:
+  - url: http://localhost:3000
+    description: Development Server
+  # - url: https://api.himatif-uninus.org
+  #   description: Production Server
+
+tags:
+  - name: Auth
+    description: Autentikasi admin
+  - name: Events
+    description: Manajemen kegiatan (public)
+  - name: Galleries
+    description: Manajemen galeri (public)
+  - name: Admin Events
+    description: Manajemen kegiatan (protected)
+  - name: Admin Galleries
+    description: Manajemen galeri (protected)
+  - name: Upload
+    description: Upload file gambar
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ===== Auth =====
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@himatif.com
+        password:
+          type: string
+          minLength: 6
+          example: password123
+
+    RegisterInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          example: Admin Himatif
+        email:
+          type: string
+          format: email
+          example: admin@himatif.com
+        password:
+          type: string
+          minLength: 6
+          example: password123
+
+    AuthResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: login successful
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    # ===== Event =====
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d0085599-401d-4a21-aafa-160f0181c484
+        title:
+          type: string
+          example: Informatika Coding Camp 2024
+        slug:
+          type: string
+          example: informatika-coding-camp-2024-abc12345
+        description:
+          type: string
+          example: Kegiatan pelatihan coding intensif
+        content:
+          type: string
+          example: Detail lengkap kegiatan ICC 2024
+        thumbnail:
+          type: string
+          example: /uploads/events/thumbnail.jpg
+        location:
+          type: string
+          example: Aula UNINUS Bandung
+        status:
+          type: string
+          enum: [upcoming, ongoing, completed]
+          example: upcoming
+        start_date:
+          type: string
+          format: date-time
+          example: "2024-10-01T08:00:00Z"
+        end_date:
+          type: string
+          format: date-time
+          example: "2024-10-03T17:00:00Z"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateEventInput:
+      type: object
+      required: [title, start_date, end_date]
+      properties:
+        title:
+          type: string
+          example: Informatika Coding Camp 2024
+        description:
+          type: string
+          example: Kegiatan pelatihan coding intensif
+        content:
+          type: string
+          example: Detail lengkap kegiatan ICC 2024
+        thumbnail:
+          type: string
+          example: /uploads/events/thumbnail.jpg
+        location:
+          type: string
+          example: Aula UNINUS Bandung
+        status:
+          type: string
+          enum: [upcoming, ongoing, completed]
+          example: upcoming
+        start_date:
+          type: string
+          format: date-time
+          example: "2024-10-01T08:00:00Z"
+        end_date:
+          type: string
+          format: date-time
+          example: "2024-10-03T17:00:00Z"
+
+    UpdateEventInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: ICC 2024 Updated
+        description:
+          type: string
+        content:
+          type: string
+        thumbnail:
+          type: string
+        location:
+          type: string
+          example: Gedung B UNINUS
+        status:
+          type: string
+          enum: [upcoming, ongoing, completed]
+          example: ongoing
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+
+    # ===== Gallery =====
+    Gallery:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: xyz-001-uuid
+        title:
+          type: string
+          example: Foto ICC 2024
+        image_url:
+          type: string
+          example: /uploads/gallery/1234567890_abc12345.jpg
+        category:
+          type: string
+          enum: [kegiatan, prestasi, organisasi, lainnya]
+          example: kegiatan
+        event_id:
+          type: string
+          format: uuid
+          example: d0085599-401d-4a21-aafa-160f0181c484
+        event:
+          $ref: "#/components/schemas/Event"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateGalleryInput:
+      type: object
+      required: [title, image_url]
+      properties:
+        title:
+          type: string
+          example: Foto ICC 2024
+        image_url:
+          type: string
+          example: /uploads/gallery/1234567890_abc12345.jpg
+        category:
+          type: string
+          enum: [kegiatan, prestasi, organisasi, lainnya]
+          example: kegiatan
+        event_id:
+          type: string
+          format: uuid
+          example: d0085599-401d-4a21-aafa-160f0181c484
+
+    UpdateGalleryInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Foto ICC 2024 Updated
+        image_url:
+          type: string
+        category:
+          type: string
+          enum: [kegiatan, prestasi, organisasi, lainnya]
+        event_id:
+          type: string
+          format: uuid
+
+    # ===== Common Response =====
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: success
+        data:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: error message
+
+paths:
+  # ===== Health =====
+  /health:
+    get:
+      summary: Health Check
+      description: Cek status API
+      responses:
+        "200":
+          description: API berjalan normal
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: Himatif API is running
+
+  # ===== Auth =====
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register Admin
+      description: Registrasi akun admin baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Register berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: register successful
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      email:
+                        type: string
+                      role:
+                        type: string
+        "400":
+          description: Validasi gagal atau email sudah terdaftar
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login Admin
+      description: Login untuk mendapatkan JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Email atau password salah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ===== Events Public =====
+  /api/v1/events:
+    get:
+      tags: [Events]
+      summary: Get All Events
+      description: Ambil semua data kegiatan (public)
+      responses:
+        "200":
+          description: List semua event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+
+  /api/v1/events/{slug}:
+    get:
+      tags: [Events]
+      summary: Get Event by Slug
+      description: Ambil detail kegiatan berdasarkan slug (public)
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: informatika-coding-camp-2024-abc12345
+      responses:
+        "200":
+          description: Detail event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Event"
+        "404":
+          description: Event tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ===== Galleries Public =====
+  /api/v1/galleries:
+    get:
+      tags: [Galleries]
+      summary: Get All Galleries
+      description: Ambil semua data galeri, bisa filter by category
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [kegiatan, prestasi, organisasi, lainnya]
+          example: kegiatan
+      responses:
+        "200":
+          description: List semua gallery
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Gallery"
+
+  /api/v1/galleries/{id}:
+    get:
+      tags: [Galleries]
+      summary: Get Gallery by ID
+      description: Ambil detail galeri berdasarkan ID (public)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail gallery
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Gallery"
+        "404":
+          description: Gallery tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ===== Admin Events =====
+  /api/v1/admin/events:
+    get:
+      tags: [Admin Events]
+      summary: Get All Events (Admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: List semua event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags: [Admin Events]
+      summary: Create Event
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEventInput"
+      responses:
+        "201":
+          description: Event berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: event created successfully
+                  data:
+                    $ref: "#/components/schemas/Event"
+        "400":
+          description: Validasi gagal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+
+  /api/v1/admin/events/{id}:
+    get:
+      tags: [Admin Events]
+      summary: Get Event by ID (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Event"
+        "404":
+          description: Event tidak ditemukan
+
+    put:
+      tags: [Admin Events]
+      summary: Update Event
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEventInput"
+      responses:
+        "200":
+          description: Event berhasil diupdate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: event updated successfully
+                  data:
+                    $ref: "#/components/schemas/Event"
+        "400":
+          description: Validasi gagal
+        "404":
+          description: Event tidak ditemukan
+
+    delete:
+      tags: [Admin Events]
+      summary: Delete Event
+      description: Hapus event beserta semua galleries yang berelasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Event berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: event deleted successfully
+        "400":
+          description: Event tidak ditemukan
+        "401":
+          description: Unauthorized
+
+  # ===== Admin Galleries =====
+  /api/v1/admin/galleries:
+    get:
+      tags: [Admin Galleries]
+      summary: Get All Galleries (Admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: List semua gallery
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Gallery"
+        "401":
+          description: Unauthorized
+
+    post:
+      tags: [Admin Galleries]
+      summary: Create Gallery
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGalleryInput"
+      responses:
+        "201":
+          description: Gallery berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: gallery created successfully
+                  data:
+                    $ref: "#/components/schemas/Gallery"
+        "400":
+          description: Validasi gagal
+        "401":
+          description: Unauthorized
+
+  /api/v1/admin/galleries/{id}:
+    get:
+      tags: [Admin Galleries]
+      summary: Get Gallery by ID (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail gallery
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Gallery"
+        "404":
+          description: Gallery tidak ditemukan
+
+    put:
+      tags: [Admin Galleries]
+      summary: Update Gallery
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateGalleryInput"
+      responses:
+        "200":
+          description: Gallery berhasil diupdate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: gallery updated successfully
+                  data:
+                    $ref: "#/components/schemas/Gallery"
+        "400":
+          description: Validasi gagal
+        "404":
+          description: Gallery tidak ditemukan
+
+    delete:
+      tags: [Admin Galleries]
+      summary: Delete Gallery
+      description: Hapus gallery beserta file gambar fisiknya
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Gallery berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: gallery deleted successfully
+        "400":
+          description: Gallery tidak ditemukan
+        "401":
+          description: Unauthorized
+
+  # ===== Upload =====
+  /api/v1/admin/upload:
+    post:
+      tags: [Upload]
+      summary: Upload Image
+      description: Upload file gambar ke server, return URL untuk dipakai di gallery atau event thumbnail
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: File gambar (jpg, jpeg, png, webp) max 5MB
+      responses:
+        "200":
+          description: Upload berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: image uploaded successfully
+                  image_url:
+                    type: string
+                    example: /uploads/gallery/1234567890_abc12345.jpg
+        "400":
+          description: File tidak valid atau ukuran melebihi batas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized

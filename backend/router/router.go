@@ -22,6 +22,9 @@ func SetupRouter(h *Handlers) *gin.Engine {
 		c.JSON(200, gin.H{"status": "ok", "message": "Backend is running"})
 	})
 
+	// Swagger UI — akses via http://localhost:3000/docs
+	r.Static("/docs", "./docs/api")
+
 	// API v1
 	v1 := r.Group("/api/v1") 
 	{
