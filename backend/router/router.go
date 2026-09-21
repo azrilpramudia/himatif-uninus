@@ -53,6 +53,8 @@ func SetupRouter(h *Handlers) *gin.Engine {
 			// Event CRUD
 			adminEvents := admin.Group("/events")
 			{
+				adminEvents.GET("", h.Event.GetAll)
+				adminEvents.GET("/:id", h.Event.GetByID)
 				adminEvents.POST("", h.Event.Create)
 				adminEvents.PUT("/:id", h.Event.Update)
 				adminEvents.DELETE("/:id", h.Event.Delete)
@@ -65,6 +67,9 @@ func SetupRouter(h *Handlers) *gin.Engine {
 				adminGalleries.PUT("/:id", h.Gallery.Update)
 				adminGalleries.DELETE("/:id", h.Gallery.Delete)
 			}
+
+			// Upload endpoint
+			admin.POST("/upload", h.Gallery.Upload)
 		}
 	}
 

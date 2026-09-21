@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/azrilpramudia/himatif-uninus/helper"
 	"github.com/azrilpramudia/himatif-uninus/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -94,4 +95,23 @@ func (h *GalleryHandler) Delete(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "gallery deleted successfully"})
+}
+
+func (h *GalleryHandler) Upload(c *gin.Context) {
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "image file is required"})
+		return
+	}
+
+	imageURL, err := helper.UploadImage(file, "gallery")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "image uploaded successfully",
+		"image_url": imageURL,
+	})
 }

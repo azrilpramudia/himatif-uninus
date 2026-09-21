@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/azrilpramudia/himatif-uninus/helper"
 	domain "github.com/azrilpramudia/himatif-uninus/internal/domain/entity"
 	"github.com/azrilpramudia/himatif-uninus/internal/repository"
 
@@ -45,10 +46,11 @@ type UpdateEventInput struct {
 
 type eventService struct {
 	repo repository.EventRepository
+	galleryRepo repository.GalleryRepository
 }
 
-func NewEventService(repo repository.EventRepository) EventService {
-	return &eventService{repo}
+func NewEventService(repo repository.EventRepository, galleryRepo repository.GalleryRepository) EventService {
+	return &eventService{repo, galleryRepo}
 }
 
 func generateSlug(title string) string {
@@ -135,9 +137,18 @@ func (s *eventService) Update(id string, input UpdateEventInput) (*domain.Event,
 }
 
 func (s *eventService) Delete(id string) error {
-	_, err := s.repo.FindByID(id)
-	if err != nil {
-		return errors.New("event not found")
-	}
-	return s.repo.Delete(id)
+    event, err := s.repo.FindByID(id)
+    if err != nil {
+        return errors.New("event not found")
+    }
+
+    galleries, err := s.galleryRepo.FindByEventID(id)
+    if err == nil {
+        // Hapus file fisik semua gallery
+        for _, g := range galleries {
+            helper.DeleteImage(g.ImageURL)
+        }
+    }
+
+    return s.repo.Delete(event.ID.String())
 }

@@ -39,7 +39,7 @@ func main() {
 
 	// ===== Service Layer =====
 	authSvc    := service.NewAuthService(userRepo)
-	eventSvc   := service.NewEventService(eventRepo)
+	eventSvc   := service.NewEventService(eventRepo, galleryRepo)
 	gallerySvc := service.NewGalleryService(galleryRepo)
 
 	// ===== Handler Layer =====

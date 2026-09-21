@@ -34,6 +34,16 @@ func (h *EventHandler) GetBySlug(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": event})
 }
 
+func (h *EventHandler) GetByID(c *gin.Context) {
+	id := c.Param("id")
+	event, err := h.service.GetByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": event})
+}
+
 func (h *EventHandler) Create(c *gin.Context) {
 	var input service.CreateEventInput
 	if err := c.ShouldBindJSON(&input); err != nil {

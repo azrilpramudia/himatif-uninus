@@ -24,7 +24,7 @@ func NewEventRepository(db *gorm.DB) EventRepository {
 
 func (r *eventRepository) FindAll() ([]domain.Event, error) {
 	var events []domain.Event
-	err := r.db.Order("start_data DESC").Find(&events).Error
+	err := r.db.Order("start_date DESC").Find(&events).Error
 	return events, err
 }
 
@@ -55,5 +55,8 @@ func (r *eventRepository) Update(event *domain.Event) error {
 }
 
 func (r *eventRepository) Delete(id string) error {
+	if err := r.db.Where("event_id = ?", id).Delete(&domain.Gallery{}).Error; err != nil {
+		return err
+	}
 	return r.db.Where("id = ?", id).Delete(&domain.Event{}).Error
 }

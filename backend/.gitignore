@@ -1,7 +1,6 @@
-# Environment
+# .gitignore
 .env
-
-# Build
-/tmp/
+tmp/
 *.log
 vendor/
+uploads/

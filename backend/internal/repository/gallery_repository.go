@@ -9,6 +9,7 @@ type GalleryRepository interface {
 	FindAll() ([]domain.Gallery, error)
 	FindByID(id string) (*domain.Gallery, error)
 	FindByCategory(category string) ([]domain.Gallery, error)
+	FindByEventID(eventID string) ([]domain.Gallery, error)
 	Create(gallery *domain.Gallery) error
 	Update(gallery *domain.Gallery) error
 	Delete(id string) error
@@ -40,6 +41,12 @@ func (r *galleryRepository) FindByID(id string) (*domain.Gallery, error) {
 func (r *galleryRepository) FindByCategory(category string) ([]domain.Gallery, error) {
 	var galleries []domain.Gallery
 	err := r.db.Where("category = ?", category).Order("created_at DESC").Find(&galleries).Error
+	return galleries, err
+}
+
+func (r *galleryRepository) FindByEventID(eventID string) ([]domain.Gallery, error) {
+	var galleries []domain.Gallery
+	err := r.db.Where("event_id = ?", eventID).Find(&galleries).Error
 	return galleries, err
 }
 
