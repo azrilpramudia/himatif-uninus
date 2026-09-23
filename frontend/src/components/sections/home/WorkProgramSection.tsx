@@ -10,18 +10,13 @@ function WorkProgramCard({ item }: { item: WorkProgram }) {
   return (
     <motion.div
       variants={fadeUpItem}
-      className="group flex flex-col gap-3 p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default"
-      style={{
-        borderColor: "rgba(18, 64, 118, 0.15)",
-        backgroundColor: "var(--bg-card)",
-      }}
+      className="group flex flex-col gap-3 p-6 rounded-2xl border border-primary/15 bg-var(--bg-card) transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default"
     >
       <h3 className="font-semibold text-base leading-snug text-primary">
         {item.title}
       </h3>
       <p
-        className="text-sm leading-relaxed"
-        style={{ color: "var(--text-body)" }}
+        className="text-sm leading-relaxed text-var(--text-body)"
       >
         {item.description}
       </p>
@@ -53,8 +48,7 @@ function SectionHeader() {
 
       <motion.p
         variants={fadeUpItem}
-        className="text-sm sm:text-base"
-        style={{ color: "var(--text-body)" }}
+        className="text-sm sm:text-base text-var(--text-body)"
       >
         Berikut Program Kerja Periode Kepengurusan 2024 - 2025
       </motion.p>
@@ -66,8 +60,7 @@ function SectionHeader() {
 export default function WorkProgramSection() {
   return (
     <section
-      className="py-20"
-      style={{ backgroundColor: "var(--bg-section-alt)" }}
+      className="py-20 bg-var(--bg-section-alt)"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeader />

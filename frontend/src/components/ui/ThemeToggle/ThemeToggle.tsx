@@ -51,7 +51,7 @@ export default function ThemeToggle() {
               width="10"
               height="10"
               viewBox="0 0 24 24"
-              fill="#124076"
+              fill="var(--color-primary)"
             >
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </motion.svg>
@@ -67,7 +67,7 @@ export default function ThemeToggle() {
               height="10"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#124076"
+              stroke="var(--color-primary)"
               strokeWidth="2.5"
               strokeLinecap="round"
             >

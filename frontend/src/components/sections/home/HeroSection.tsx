@@ -2,18 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { siteConfig } from "@/constants/siteConfig";
 import { fadeUpContainer, fadeUpItem } from "@/lib/animations";
 
 export default function HeroSection() {
-  const [isOutlineHovered, setIsOutlineHovered] = useState(false);
-
   return (
     <section
-      className="min-h-[calc(100vh-4rem)] flex items-center"
-      style={{ backgroundColor: "var(--bg-page)" }}
+      className="min-h-[calc(100vh-4rem)] flex items-center bg-var(--bg-page)"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full py-16 md:py-20">
         <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-10 md:gap-8">
@@ -27,8 +23,7 @@ export default function HeroSection() {
             {/* Heading */}
             <motion.h1
               variants={fadeUpItem}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight"
-              style={{ color: "var(--hero-text-heading)" }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-var(--hero-text-heading)"
             >
               GLORY HIMATIF!
             </motion.h1>
@@ -36,8 +31,7 @@ export default function HeroSection() {
             {/* Subheading */}
             <motion.p
               variants={fadeUpItem}
-              className="text-base sm:text-lg leading-relaxed max-w-2xl mx-auto md:mx-0"
-              style={{ color: "var(--hero-text-heading)" }}
+              className="text-base sm:text-lg leading-relaxed max-w-2xl mx-auto md:mx-0 text-var(--hero-text-heading)"
             >
               Welcome to {siteConfig.fullName}
               <br />
@@ -52,11 +46,7 @@ export default function HeroSection() {
               {/* Primary Button */}
               <Link
                 href="/events"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
-                style={{
-                  backgroundColor: "var(--color-primary)",
-                  color: "var(--color-primary-light)",
-                }}
+                className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0 bg-primary text-primary-light"
               >
                 Lihat Kegiatan
               </Link>
@@ -64,20 +54,7 @@ export default function HeroSection() {
               {/* Outline Button */}
               <Link
                 href="/about"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl border-2 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
-                style={{
-                  color: isOutlineHovered
-                    ? "#fbfbfb"
-                    : "var(--hero-btn-outline-text)",
-                  borderColor: isOutlineHovered
-                    ? "#124076"
-                    : "var(--hero-btn-outline-border)",
-                  backgroundColor: isOutlineHovered ? "#124076" : "transparent",
-                  transition:
-                    "background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease",
-                }}
-                onMouseEnter={() => setIsOutlineHovered(true)}
-                onMouseLeave={() => setIsOutlineHovered(false)}
+                className="inline-flex items-center justify-center px-6 py-3 rounded-xl border-2 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 text-var(--hero-btn-outline-text) border-var(--hero-btn-outline-border) hover:bg-primary hover:text-primary-light hover:border-primary"
               >
                 Tentang Kami
               </Link>

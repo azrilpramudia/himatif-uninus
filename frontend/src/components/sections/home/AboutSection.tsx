@@ -8,8 +8,7 @@ import { fadeUpContainer, fadeUpItem } from "@/lib/animations";
 export default function AboutSection() {
   return (
     <section
-      className="py-20"
-      style={{ backgroundColor: "var(--bg-section-alt)" }}
+      className="py-20 bg-var(--bg-section-alt)"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16">
@@ -38,8 +37,7 @@ export default function AboutSection() {
             {/* Description */}
             <motion.p
               variants={fadeUpItem}
-              className="text-sm sm:text-base leading-relaxed max-w-lg"
-              style={{ color: "var(--text-body)" }}
+              className="text-sm sm:text-base leading-relaxed max-w-lg text-var(--text-body)"
             >
               Himatif Uninus atau Himpunan Mahasiswa Teknik Informatika
               Universitas Islam Nusantara merupakan sebuah organisasi dalam
