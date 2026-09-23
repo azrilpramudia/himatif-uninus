@@ -3,40 +3,8 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeUpContainer, fadeUpItem } from "@/lib/animations";
-
-// ===== Types =====
-type Activity = {
-  id: number;
-  src: string;
-  alt: string;
-  aspectClass: string;
-  objectFit: "object-cover" | "object-contain";
-};
-
-// ===== Data =====
-const activities: Activity[] = [
-  {
-    id: 1,
-    src: "/images/activity-photo.jpg",
-    alt: "Foto Kegiatan Himatif",
-    aspectClass: "aspect-[4/3]",
-    objectFit: "object-cover",
-  },
-  {
-    id: 2,
-    src: "/images/activity-maktab.png",
-    alt: "Logo MAKTAB 2024",
-    aspectClass: "aspect-[4/3]",
-    objectFit: "object-contain",
-  },
-  {
-    id: 3,
-    src: "/images/activity-mentor.jpg",
-    alt: "Mentor Reveal's Event",
-    aspectClass: "aspect-[4/3]",
-    objectFit: "object-cover",
-  },
-];
+import { activities } from "@/constants/activities";
+import type { Activity } from "@/types/activity";
 
 // ===== Badge =====
 function SectionBadge() {
