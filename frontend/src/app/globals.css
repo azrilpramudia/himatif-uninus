@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #124076;
+  --color-primary-blue-soft: #f1f3ff;
+  --color-primary-light: #fbfbfb;
+  --color-primary-dark: #0d0d0d;
+  --color-accent: #e8f4fd;
+  --font-poppins: "Poppins", sans-serif;
+  --spacing-section: 5rem;
+}
+
+/* ===== Light Mode ===== */
+:root {
+  color-scheme: light;
+
+  /* Background */
+  --bg-page: #f1f3ff;
+  --bg-section-alt: #fbfbfb;
+  --bg-card: #ffffff;
+
+  /* Text */
+  --text-body: #0d0d0d;
+  --text-muted: #374151;
+
+  /* Hero */
+  --hero-text-heading: #0d0d0d;
+  --hero-text-body: #374151;
+  --hero-btn-outline-text: #124076;
+  --hero-btn-outline-border: rgba(18, 64, 118, 0.3);
+}
+
+/* ===== Dark Mode ===== */
+.dark {
+  color-scheme: dark;
+
+  --bg-page: #0d0d0d;
+  --bg-section-alt: #0d0d0d;
+  --bg-card: #1a1a1a;
+
+  /* Text */
+  --text-body: #fbfbfb;
+  --text-muted: #94a3b8;
+
+  /* Hero */
+  --hero-text-heading: #ffffff;
+  --hero-text-body: rgba(255, 255, 255, 0.6);
+  --hero-btn-outline-text: #ffffff;
+  --hero-btn-outline-border: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== Base ===== */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-body);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
