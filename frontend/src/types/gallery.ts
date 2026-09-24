@@ -4,11 +4,21 @@ export type GalleryCategory =
   | "organisasi"
   | "lainnya";
 
-export type GalleryItem = {
+export type Gallery = {
   id: string;
   title: string;
-  imageUrl: string;
+  image_url: string;
   category: GalleryCategory;
-  eventId?: string;
-  createdAt: string;
+  event_id?: string;
+  event?: import("./event").Event;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GalleriesResponse = {
+  data: Gallery[];
+};
+
+export type GalleryResponse = {
+  data: Gallery;
 };

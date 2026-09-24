@@ -7,10 +7,18 @@ export type Event = {
   description: string;
   content: string;
   thumbnail: string;
-  status: EventStatus;
   location: string;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  updatedAt: string;
+  status: EventStatus;
+  start_date: string;
+  end_date: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type EventsResponse = {
+  data: Event[];
+};
+
+export type EventResponse = {
+  data: Event;
 };
