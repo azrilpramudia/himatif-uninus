@@ -36,7 +36,7 @@ export default function HeroSection() {
             {/* Subheading */}
             <motion.p
               variants={fadeUpItem}
-              className="text-base sm:text-lg leading-relaxed max-w-md mx-auto md:mx-0"
+              className="text-base sm:text-lg leading-relaxed max-w-xl mx-auto md:mx-0"
               style={{ color: "var(--hero-text-body)" }}
             >
               Welcome to {siteConfig.fullName}
