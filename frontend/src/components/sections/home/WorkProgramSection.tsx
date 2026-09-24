@@ -10,7 +10,8 @@ function WorkProgramCard({ item }: { item: WorkProgram }) {
   return (
     <motion.div
       variants={fadeUpItem}
-      className="group flex flex-col gap-3 p-6 rounded-2xl border border-primary/15 bg-var(--bg-card) transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default"
+      className="group flex flex-col gap-3 p-6 rounded-2xl border border-primary/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default"
+      style={{ backgroundColor: "bg-var(--bg-card)" }}
     >
       <h3 className="font-semibold text-base leading-snug text-primary">
         {item.title}
