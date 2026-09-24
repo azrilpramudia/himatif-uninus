@@ -68,14 +68,17 @@ function FaqCard({
 
 // ===== Main Section =====
 export default function FaqSection() {
-  const [openId, setOpenId] = useState<string | null>(faqData[0].id); // First item open by default
+  const [openId, setOpenId] = useState<string | null>(faqData[0].id);
 
   const toggleItem = (id: string) => {
     setOpenId((prev) => (prev === id ? null : id));
   };
 
   return (
-    <section className="py-20 bg-var(--bg-page)">
+    <section
+      className="py-20"
+      style={{ backgroundColor: "var(--bg-section-alt)" }}
+    >
       <div className="max-w-4xl mx-auto px-6 lg:px-8">
         <motion.div
           variants={fadeUpContainer}

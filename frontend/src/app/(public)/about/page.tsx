@@ -4,11 +4,53 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeUpContainer, fadeUpItem } from "@/lib/animations";
 
+// ===== Data =====
+const misiList = [
+  "Membentuk Mahasiswa yang bertaqwa kepada Tuhan Yang Maha Esa.",
+  "Membentuk Karakter setiap anggota yang kreatif, inovatif, unggul, berwawasan luas, dan bertanggung jawab.",
+  "Mengembangkan potensi dalam diri setiap anggota Himatif baik dalam hardskill maupun softskill.",
+  "Membangun sifat kekeluargaan dan profesionalisme demi mencapai tujuan yang sama dan menghargai perbedaan.",
+];
+
+// ===== Icons =====
+const VisiIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="28"
+    height="28"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M2 12h4l3-9 5 18 3-9h5" />
+  </svg>
+);
+
+const MisiIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="28"
+    height="28"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+  </svg>
+);
+
+// ===== Page =====
 export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-screen pt-20">
+    <div className="flex flex-col min-h-screen">
       {/* ===== Hero About ===== */}
-      <section className="py-20 bg-var(--bg-page)">
+      <section className="py-20" style={{ backgroundColor: "var(--bg-page)" }}>
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <motion.div
             variants={fadeUpContainer}
@@ -22,13 +64,16 @@ export default function AboutPage() {
             >
               Tentang Kami
             </motion.h1>
+
             <motion.div
               variants={fadeUpItem}
               className="w-16 h-1.5 rounded-full bg-primary"
             />
+
             <motion.p
               variants={fadeUpItem}
-              className="text-base sm:text-lg lg:text-xl leading-relaxed max-w-3xl text-var(--text-body)"
+              className="text-base sm:text-lg leading-relaxed max-w-3xl"
+              style={{ color: "var(--text-muted)" }}
             >
               HIMATIF UNINUS berkedudukan di Jurusan Teknik Informatika Fakultas
               Teknik Universitas Islam Nusantara dan secara operasional
@@ -43,44 +88,39 @@ export default function AboutPage() {
       </section>
 
       {/* ===== Visi & Misi ===== */}
-      <section className="py-24 bg-var(--bg-section-alt)">
+      <section
+        className="py-20"
+        style={{ backgroundColor: "var(--bg-section-alt)" }}
+      >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
             {/* Visi */}
             <motion.div
               variants={fadeUpContainer}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-80px" }}
-              className="flex flex-col gap-5 p-8 rounded-3xl bg-var(--bg-card) border border-primary/10 shadow-sm"
+              className="flex flex-col gap-5 p-8 rounded-2xl border border-primary/10"
+              style={{ backgroundColor: "var(--bg-card)" }}
             >
               <motion.div
                 variants={fadeUpItem}
-                className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-2"
+                className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M2 12h4l3-9 5 18 3-9h5" />
-                </svg>
+                <VisiIcon />
               </motion.div>
+
               <motion.h2
                 variants={fadeUpItem}
-                className="text-2xl sm:text-3xl font-bold text-primary"
+                className="text-2xl font-bold text-primary"
               >
                 Visi
               </motion.h2>
+
               <motion.p
                 variants={fadeUpItem}
-                className="text-base leading-relaxed text-var(--text-muted)"
+                className="text-sm sm:text-base leading-relaxed"
+                style={{ color: "var(--text-muted)" }}
               >
                 Membangun Karakter dengan semangat bermusyawarah melalui ilmu
                 pengetahuan, etika, dan keahlian dalam bidang teknologi dan
@@ -96,48 +136,35 @@ export default function AboutPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-80px" }}
-              className="flex flex-col gap-5 p-8 rounded-3xl bg-var(--bg-card) border border-primary/10 shadow-sm"
+              className="flex flex-col gap-5 p-8 rounded-2xl border border-primary/10"
+              style={{ backgroundColor: "var(--bg-card)" }}
             >
               <motion.div
                 variants={fadeUpItem}
-                className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-2"
+                className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-                </svg>
+                <MisiIcon />
               </motion.div>
+
               <motion.h2
                 variants={fadeUpItem}
-                className="text-2xl sm:text-3xl font-bold text-primary"
+                className="text-2xl font-bold text-primary"
               >
                 Misi
               </motion.h2>
+
               <motion.ul
                 variants={fadeUpContainer}
-                className="flex flex-col gap-3 text-base text-var(--text-muted)"
+                className="flex flex-col gap-3"
               >
-                {[
-                  "Membentuk Mahasiswa yang bertaqwa kepada Tuhan Yang Maha Esa",
-                  "Membentuk Karakter setiap anggota yang kreatif, inovatif, unggul, berwawasan luas, dan bertanggung jawab.",
-                  "Mengembangkan potensi dalam diri setiap anggota Himatif baik dalam hardskill maupun softskill.",
-                  "Membangun sifat kekeluargaan dan profesionalisme demi mencapai tujuan yang sama dan menghargai perbedaan.",
-                ].map((misi, index) => (
+                {misiList.map((misi, index) => (
                   <motion.li
                     key={index}
                     variants={fadeUpItem}
-                    className="flex gap-3"
+                    className="flex gap-3 text-sm sm:text-base"
+                    style={{ color: "var(--text-muted)" }}
                   >
-                    <span className="shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold mt-0.5">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold mt-0.5">
                       {index + 1}
                     </span>
                     <span className="leading-relaxed">{misi}</span>
@@ -150,32 +177,34 @@ export default function AboutPage() {
       </section>
 
       {/* ===== Sejarah Singkat ===== */}
-      <section className="py-24 bg-var(--bg-page)">
+      <section className="py-20" style={{ backgroundColor: "var(--bg-page)" }}>
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+            {/* Gambar */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="w-full md:w-1/2"
+              className="w-full md:w-1/2 flex justify-center"
             >
-              <div className="relative w-full aspect-square sm:aspect-4/3 max-w-sm mx-auto md:max-w-none">
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80">
                 <Image
                   src="/images/himatif-logo.png"
-                  alt="Sejarah Himatif"
+                  alt="Logo Himatif Uninus"
                   fill
                   className="object-contain drop-shadow-xl"
                 />
               </div>
             </motion.div>
 
+            {/* Teks */}
             <motion.div
               variants={fadeUpContainer}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-80px" }}
-              className="w-full md:w-1/2 flex flex-col gap-6"
+              className="w-full md:w-1/2 flex flex-col gap-5"
             >
               <motion.h2
                 variants={fadeUpItem}
@@ -183,24 +212,24 @@ export default function AboutPage() {
               >
                 Sejarah Singkat
               </motion.h2>
+
               <motion.div
                 variants={fadeUpItem}
                 className="w-12 h-1 rounded-full bg-primary"
               />
-              <motion.div
+
+              <motion.p
                 variants={fadeUpItem}
-                className="flex flex-col gap-4 text-base leading-relaxed text-var(--text-body)"
+                className="text-sm sm:text-base leading-relaxed"
+                style={{ color: "var(--text-muted)" }}
               >
-                <p>
-                  HIMATIF UNINUS didirikan di Kota Bandung pada tanggal 24 Maret
-                  2018 sebagai organisasi kemahasiswaan Program Studi Teknik
-                  Informatika Universitas Islam Nusantara. Organisasi ini
-                  dibentuk untuk jangka waktu yang tidak ditetapkan dan
-                  berfungsi sebagai wadah pengembangan akademik, keorganisasian,
-                  serta penyaluran aspirasi mahasiswa Teknik Informatika secara
-                  berkelanjutan.
-                </p>
-              </motion.div>
+                HIMATIF UNINUS didirikan di Kota Bandung pada tanggal 24 Maret
+                2018 sebagai organisasi kemahasiswaan Program Studi Teknik
+                Informatika Universitas Islam Nusantara. Organisasi ini dibentuk
+                untuk jangka waktu yang tidak ditetapkan dan berfungsi sebagai
+                wadah pengembangan akademik, keorganisasian, serta penyaluran
+                aspirasi mahasiswa Teknik Informatika secara berkelanjutan.
+              </motion.p>
             </motion.div>
           </div>
         </div>

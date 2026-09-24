@@ -12,7 +12,7 @@ function EventCard({ item }: { item: EventHighlight }) {
   return (
     <motion.div
       variants={fadeUpItem}
-      className="flex flex-col rounded-2xl overflow-hidden bg-var(--bg-card) border border-primary/10 hover:shadow-md transition-shadow duration-300"
+      className="flex flex-col rounded-2xl overflow-hidden border border-primary/10 hover:shadow-md transition-shadow duration-300"
     >
       {/* Thumbnail */}
       <div className="relative w-full aspect-4/3 overflow-hidden">
@@ -55,7 +55,10 @@ function EventCard({ item }: { item: EventHighlight }) {
 // ===== Main Section =====
 export default function EventHighlightSection() {
   return (
-    <section className="py-20 bg-var(--bg-section-alt)">
+    <section
+      className="py-20"
+      style={{ backgroundColor: "var(--bg-section-alt)" }}
+    >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           variants={fadeUpContainer}

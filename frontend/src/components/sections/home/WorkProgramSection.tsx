@@ -15,9 +15,7 @@ function WorkProgramCard({ item }: { item: WorkProgram }) {
       <h3 className="font-semibold text-base leading-snug text-primary">
         {item.title}
       </h3>
-      <p
-        className="text-sm leading-relaxed text-var(--text-body)"
-      >
+      <p className="text-sm leading-relaxed text-var(--text-body)">
         {item.description}
       </p>
     </motion.div>
@@ -60,7 +58,8 @@ function SectionHeader() {
 export default function WorkProgramSection() {
   return (
     <section
-      className="py-20 bg-var(--bg-section-alt)"
+      className="py-20"
+      style={{ backgroundColor: "var(--bg-section-alt)" }}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <SectionHeader />

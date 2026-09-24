@@ -9,13 +9,8 @@ import type { Activity } from "@/types/activity";
 // ===== Badge =====
 function SectionBadge() {
   return (
-    <motion.div
-      variants={fadeUpItem}
-      className="flex justify-center"
-    >
-      <span
-        className="inline-block px-6 py-3 rounded-xl text-sm font-semibold text-white bg-primary"
-      >
+    <motion.div variants={fadeUpItem} className="flex justify-center">
+      <span className="inline-block px-6 py-3 rounded-xl text-sm font-semibold text-white bg-primary">
         Aktivitas Himatif
       </span>
     </motion.div>
@@ -55,7 +50,8 @@ function ActivityCard({
 export default function ActivitySection() {
   return (
     <section
-      className="py-20 bg-var(--bg-section-alt)"
+      className="py-20"
+      style={{ backgroundColor: "var(--bg-section-alt)" }}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
