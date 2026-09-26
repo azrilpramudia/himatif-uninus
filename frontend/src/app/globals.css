@@ -13,15 +13,23 @@
 /* ===== Light Mode ===== */
 :root {
   color-scheme: light;
-
-  /* Background */
   --bg-page: #f1f3ff;
   --bg-section-alt: #fbfbfb;
   --bg-card: #ffffff;
-
-  /* Text */
   --text-body: #0d0d0d;
   --text-muted: #374151;
+
+  /* Navbar */
+  --navbar-bg: #124076;
+  --navbar-bg-scrolled: rgba(18, 64, 118, 0.95);
+
+  /* Footer */
+  --footer-bg: #124076;
+  --footer-text: rgba(255, 255, 255, 0.6);
+  --footer-text-heading: #ffffff;
+  --footer-text-link: rgba(255, 255, 255, 0.6);
+  --footer-border: rgba(255, 255, 255, 0.15);
+  --footer-copyright: rgba(255, 255, 255, 0.35);
 
   /* Hero */
   --hero-text-heading: #0d0d0d;
@@ -33,14 +41,23 @@
 /* ===== Dark Mode ===== */
 .dark {
   color-scheme: dark;
-
   --bg-page: #0d0d0d;
   --bg-section-alt: #0d0d0d;
   --bg-card: #1a1a1a;
-
-  /* Text */
   --text-body: #fbfbfb;
   --text-muted: #94a3b8;
+
+  /* Navbar */
+  --navbar-bg: #0d0d0d;
+  --navbar-bg-scrolled: rgba(13, 13, 13, 0.95);
+
+  /* Footer — samakan dengan bg-page */
+  --footer-bg: #0d0d0d;
+  --footer-text: rgba(255, 255, 255, 0.5);
+  --footer-text-heading: rgba(255, 255, 255, 0.9);
+  --footer-text-link: rgba(255, 255, 255, 0.5);
+  --footer-border: rgba(255, 255, 255, 0.08);
+  --footer-copyright: rgba(255, 255, 255, 0.25);
 
   /* Hero */
   --hero-text-heading: #ffffff;

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { publicNavItems } from "@/constants/navigation";
 import { siteConfig } from "@/constants/siteConfig";
 import ThemeToggle from "@/components/ui/ThemeToggle";
@@ -16,26 +16,26 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Detect scroll untuk shadow effect
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Tutup mobile menu saat navigasi
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname]);
 
   return (
     <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled
-          ? "bg-primary/95 backdrop-blur-md shadow-lg shadow-black/10"
-          : "bg-primary",
-      )}
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        backgroundColor: isScrolled
+          ? "var(--navbar-bg-scrolled)"
+          : "var(--navbar-bg)",
+        backdropFilter: isScrolled ? "blur(12px)" : "none",
+        boxShadow: isScrolled ? "0 4px 20px rgba(0,0,0,0.1)" : "none",
+      }}
     >
       <nav className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -59,43 +59,43 @@ export default function Navbar() {
           </Link>
 
           {/* ===== Desktop Nav ===== */}
-          <div className="hidden md:flex justify-end items-center gap-1 w-full me-4">
-            {publicNavItems.map((item) => {
-              const isActive = pathname === item.href;
+          <LayoutGroup>
+            <div className="hidden md:flex justify-end items-center gap-1 w-full me-4">
+              {publicNavItems.map((item) => {
+                const isActive = pathname === item.href;
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
-                    isActive
-                      ? "text-white"
-                      : "text-white/70 hover:text-white hover:bg-white/10",
-                  )}
-                >
-                  {item.label}
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200",
+                      isActive
+                        ? "text-white"
+                        : "text-white/70 hover:text-white hover:bg-white/10",
+                    )}
+                  >
+                    {item.label}
 
-                  {/* Active indicator */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="navbar-active"
-                      initial={false}
-                      className="absolute inset-0 bg-white/15 rounded-lg -z-10"
-                      style={{ originY: "0px" }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
+                    {isActive && (
+                      <motion.div
+                        layoutId="navbar-active"
+                        initial={false}
+                        className="absolute inset-0 bg-white/15 rounded-lg -z-10"
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 30,
+                        }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </LayoutGroup>
 
-          {/* ===== Right Side: Toggle + Mobile Burger ===== */}
+          {/* ===== Right Side ===== */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
 
@@ -110,7 +110,6 @@ export default function Navbar() {
                   isMobileOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }
                 }
                 transition={{ duration: 0.2 }}
-                // Gunakan h-[2px] agar lebih presisi dibanding h-0.5
                 className="block w-5 h-0.5 bg-white rounded-full"
               />
               <motion.span
@@ -142,7 +141,10 @@ export default function Navbar() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="md:hidden overflow-hidden border-t border-white/10"
           >
-            <div className="bg-primary/98 backdrop-blur-md px-6 py-4 flex flex-col gap-1">
+            <div
+              className="px-6 py-4 flex flex-col gap-1 backdrop-blur-md"
+              style={{ backgroundColor: "var(--navbar-bg)" }}
+            >
               {publicNavItems.map((item, index) => {
                 const isActive = pathname === item.href;
 

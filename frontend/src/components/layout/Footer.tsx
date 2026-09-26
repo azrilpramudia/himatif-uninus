@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { footerColumns } from "@/constants/navigation";
 import { siteConfig } from "@/constants/siteConfig";
 import { fadeUpContainer, fadeUpItem } from "@/lib/animations";
-import { cn } from "@/lib/utils";
 
 // ===== Footer Logo =====
 function FooterLogo() {
@@ -22,10 +21,16 @@ function FooterLogo() {
         />
       </div>
       <div className="flex flex-col">
-        <span className="text-white font-bold text-lg md:text-xl leading-tight tracking-wide">
+        <span
+          className="font-bold text-lg md:text-xl leading-tight tracking-wide"
+          style={{ color: "var(--footer-text-heading)" }}
+        >
           HIMATIF
         </span>
-        <span className="text-white font-semibold text-lg md:text-xl leading-tight tracking-wide">
+        <span
+          className="font-semibold text-lg md:text-xl leading-tight tracking-wide"
+          style={{ color: "var(--footer-text-heading)" }}
+        >
           UNINUS
         </span>
       </div>
@@ -42,10 +47,16 @@ type FooterNavColumnProps = {
 function FooterNavColumn({ title, links }: FooterNavColumnProps) {
   return (
     <motion.div variants={fadeUpItem} className="flex flex-col gap-3">
-      <h3 className="text-white font-semibold text-xs tracking-widest uppercase">
+      <h3
+        className="font-semibold text-xs tracking-widest uppercase"
+        style={{ color: "var(--footer-text-heading)" }}
+      >
         {title}
       </h3>
-      <div className="w-full h-px bg-white/20" />
+      <div
+        className="w-full h-px"
+        style={{ backgroundColor: "var(--footer-border)" }}
+      />
       <ul className="flex flex-col gap-2.5">
         {links.map((link) => (
           <li key={link.href}>
@@ -53,10 +64,8 @@ function FooterNavColumn({ title, links }: FooterNavColumnProps) {
               href={link.href}
               target={link.isExternal ? "_blank" : undefined}
               rel={link.isExternal ? "noopener noreferrer" : undefined}
-              className={cn(
-                "text-white/60 text-sm transition-all duration-200",
-                "hover:text-white hover:translate-x-1 inline-block",
-              )}
+              className="text-sm transition-all duration-200 hover:translate-x-1 inline-block"
+              style={{ color: "var(--footer-text-link)" }}
             >
               {link.label}
             </Link>
@@ -74,9 +83,13 @@ function FooterBottom() {
   return (
     <motion.div
       variants={fadeUpItem}
-      className="border-t border-white/15 pt-5 mt-8 flex flex-col items-center gap-1 sm:flex-row sm:justify-between"
+      className="pt-5 mt-8 flex flex-col items-center gap-1 sm:flex-row sm:justify-between border-t"
+      style={{ borderColor: "var(--footer-border)" }}
     >
-      <p className="text-white/35 text-xs text-center sm:text-left">
+      <p
+        className="text-xs text-center sm:text-left"
+        style={{ color: "var(--footer-copyright)" }}
+      >
         © {currentYear} {siteConfig.fullName}. All rights reserved.
       </p>
     </motion.div>
@@ -86,7 +99,7 @@ function FooterBottom() {
 // ===== Main Footer =====
 export default function Footer() {
   return (
-    <footer className="bg-primary">
+    <footer style={{ backgroundColor: "var(--footer-bg)" }}>
       <div className="max-w-7xl mx-auto px-8 lg:px-8 pt-10 md:pt-14 pb-8">
         <motion.div
           variants={fadeUpContainer}
@@ -100,7 +113,8 @@ export default function Footer() {
             <FooterLogo />
             <motion.p
               variants={fadeUpItem}
-              className="text-white/55 text-sm leading-relaxed"
+              className="text-sm leading-relaxed"
+              style={{ color: "var(--footer-text)" }}
             >
               Developed by UNINUS HIMATIF Team
             </motion.p>
