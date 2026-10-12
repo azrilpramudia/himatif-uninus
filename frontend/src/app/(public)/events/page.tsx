@@ -47,7 +47,6 @@ function EventCard({ event }: { event: Event }) {
             className="object-cover transition-transform duration-300 hover:scale-105"
           />
         ) : (
-          // Placeholder kalau tidak ada thumbnail
           <div className="w-full h-full flex items-center justify-center">
             <svg
               width="40"
@@ -158,7 +157,7 @@ export default function EventsPage() {
       style={{ backgroundColor: "var(--bg-page)" }}
     >
       {/* ===== Header ===== */}
-      <section className="py-12" style={{ backgroundColor: "var(--bg-page)" }}>
+      <section className="py-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col items-center gap-6">
           <h1
             className="text-3xl sm:text-4xl font-bold text-center"

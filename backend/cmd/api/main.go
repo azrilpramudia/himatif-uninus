@@ -1,4 +1,3 @@
-// cmd/api/main.go
 package main
 
 import (
@@ -33,18 +32,18 @@ func main() {
 	}
 
 	// ===== Repository Layer =====
-	userRepo    := repository.NewUserRepository(config.DB)
-	eventRepo   := repository.NewEventRepository(config.DB)
+	userRepo := repository.NewUserRepository(config.DB)
+	eventRepo := repository.NewEventRepository(config.DB)
 	galleryRepo := repository.NewGalleryRepository(config.DB)
 
 	// ===== Service Layer =====
-	authSvc    := service.NewAuthService(userRepo)
-	eventSvc   := service.NewEventService(eventRepo, galleryRepo)
+	authSvc := service.NewAuthService(userRepo)
+	eventSvc := service.NewEventService(eventRepo, galleryRepo)
 	gallerySvc := service.NewGalleryService(galleryRepo)
 
 	// ===== Handler Layer =====
-	authHandler    := handler.NewAuthHandler(authSvc)
-	eventHandler   := handler.NewEventHandler(eventSvc)
+	authHandler := handler.NewAuthHandler(authSvc)
+	eventHandler := handler.NewEventHandler(eventSvc)
 	galleryHandler := handler.NewGalleryHandler(gallerySvc)
 
 	// ===== Router =====
