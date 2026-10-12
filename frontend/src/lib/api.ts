@@ -1,7 +1,9 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+
 type FetchOptions = {
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method?: HttpMethod;
   body?: unknown;
   token?: string;
 };
@@ -24,10 +26,11 @@ export async function fetchAPI<T>(
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
+    cache: "no-store",
   });
 
   if (!res.ok) {
-    const error = await res.json();
+    const error = await res.json().catch(() => ({ error: "Network error" }));
     throw new Error(error.error || "Something went wrong");
   }
 

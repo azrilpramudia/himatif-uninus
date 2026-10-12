@@ -2,115 +2,37 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useGallery } from "@/hooks/useGallery";
+import type { Gallery, GalleryCategory } from "@/types/gallery";
 
-// ===== Types =====
-type GalleryCategory =
-  | "All"
-  | "Kegiatan"
-  | "Prestasi"
-  | "Organisasi"
-  | "Lainnya";
+type FilterCategory = "All" | GalleryCategory;
 
-type GalleryItem = {
-  id: string;
-  title: string;
-  category: GalleryCategory;
-  date: string;
-  image: string;
+const categories: FilterCategory[] = [
+  "All",
+  "kegiatan",
+  "prestasi",
+  "organisasi",
+  "lainnya",
+];
+
+const categoryLabel: Record<FilterCategory, string> = {
+  All: "All",
+  kegiatan: "Kegiatan",
+  prestasi: "Prestasi",
+  organisasi: "Organisasi",
+  lainnya: "Lainnya",
 };
 
-// ===== Dummy Data =====
-const dummyGallery: GalleryItem[] = [
-  {
-    id: "1",
-    title: "ICC 2024 - Opening Ceremony",
-    category: "Kegiatan",
-    date: "25 Jul 2024",
-    image: "/images/gallery/gallery-1.jpg",
-  },
-  {
-    id: "2",
-    title: "Juara 1 Kompetisi Pemrograman",
-    category: "Prestasi",
-    date: "20 Jun 2024",
-    image: "/images/gallery/gallery-2.jpg",
-  },
-  {
-    id: "3",
-    title: "Foto Bersama Pengurus 2024",
-    category: "Organisasi",
-    date: "15 Jan 2024",
-    image: "/images/gallery/gallery-3.jpg",
-  },
-  {
-    id: "4",
-    title: "Workshop UI/UX Design",
-    category: "Kegiatan",
-    date: "10 Feb 2024",
-    image: "/images/gallery/gallery-4.jpg",
-  },
-  {
-    id: "5",
-    title: "Medali Emas Lomba Web",
-    category: "Prestasi",
-    date: "5 Mar 2024",
-    image: "/images/gallery/gallery-5.jpg",
-  },
-  {
-    id: "6",
-    title: "Kunjungan Industri ke Bandung Tech",
-    category: "Kegiatan",
-    date: "1 Apr 2024",
-    image: "/images/gallery/gallery-6.jpg",
-  },
-  {
-    id: "7",
-    title: "Rapat Koordinasi Pengurus",
-    category: "Organisasi",
-    date: "12 Apr 2024",
-    image: "/images/gallery/gallery-7.jpg",
-  },
-  {
-    id: "8",
-    title: "Seminar Teknologi AI",
-    category: "Kegiatan",
-    date: "20 May 2024",
-    image: "/images/gallery/gallery-8.jpg",
-  },
-  {
-    id: "9",
-    title: "Pengabdian Masyarakat",
-    category: "Lainnya",
-    date: "8 Jun 2024",
-    image: "/images/gallery/gallery-9.jpg",
-  },
-];
-
-const categories: GalleryCategory[] = [
-  "All",
-  "Kegiatan",
-  "Prestasi",
-  "Organisasi",
-  "Lainnya",
-];
-
-// ===== Badge Color =====
-const badgeColor: Record<GalleryCategory, string> = {
+const badgeColor: Record<FilterCategory, string> = {
   All: "#124076",
-  Kegiatan: "#124076",
-  Prestasi: "#7c3aed",
-  Organisasi: "#0891b2",
-  Lainnya: "#374151",
+  kegiatan: "#124076",
+  prestasi: "#7c3aed",
+  organisasi: "#0891b2",
+  lainnya: "#374151",
 };
 
 // ===== Lightbox =====
-function Lightbox({
-  item,
-  onClose,
-}: {
-  item: GalleryItem;
-  onClose: () => void;
-}) {
+function Lightbox({ item, onClose }: { item: Gallery; onClose: () => void }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
@@ -121,7 +43,7 @@ function Lightbox({
         style={{ backgroundColor: "var(--bg-card)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
+        {/* Close */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-colors"
@@ -142,7 +64,7 @@ function Lightbox({
         {/* Image */}
         <div className="relative w-full aspect-video">
           <Image
-            src={item.image}
+            src={`${process.env.NEXT_PUBLIC_API_URL}${item.image_url}`}
             alt={item.title}
             fill
             className="object-cover"
@@ -152,7 +74,7 @@ function Lightbox({
         {/* Info */}
         <div className="p-5 flex flex-col gap-2">
           <span
-            className="text-[10px] font-semibold text-white px-2.5 py-1 rounded-md w-fit"
+            className="text-[10px] font-semibold text-white px-2.5 py-1 rounded-md w-fit capitalize"
             style={{ backgroundColor: badgeColor[item.category] }}
           >
             {item.category}
@@ -163,9 +85,6 @@ function Lightbox({
           >
             {item.title}
           </h3>
-          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-            {item.date}
-          </p>
         </div>
       </div>
     </div>
@@ -177,7 +96,7 @@ function GalleryCard({
   item,
   onClick,
 }: {
-  item: GalleryItem;
+  item: Gallery;
   onClick: () => void;
 }) {
   return (
@@ -186,16 +105,13 @@ function GalleryCard({
       style={{ backgroundColor: "var(--bg-card)" }}
       onClick={onClick}
     >
-      {/* Thumbnail */}
       <div className="relative w-full aspect-square overflow-hidden">
         <Image
-          src={item.image}
+          src={`${process.env.NEXT_PUBLIC_API_URL}${item.image_url}`}
           alt={item.title}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-
-        {/* Overlay saat hover */}
         <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/30 transition-all duration-300 flex items-center justify-center">
           <svg
             className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -211,21 +127,14 @@ function GalleryCard({
             <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
           </svg>
         </div>
-
-        {/* Badge */}
         <span
-          className="absolute top-3 left-3 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white"
+          className="absolute top-3 left-3 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white capitalize"
           style={{ backgroundColor: badgeColor[item.category] }}
         >
           {item.category}
         </span>
       </div>
-
-      {/* Content */}
       <div className="flex flex-col gap-1.5 p-4">
-        <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-          {item.date}
-        </p>
         <h3
           className="text-sm font-semibold leading-snug line-clamp-2"
           style={{ color: "var(--text-body)" }}
@@ -237,18 +146,34 @@ function GalleryCard({
   );
 }
 
+// ===== Skeleton =====
+function SkeletonCard() {
+  return (
+    <div
+      className="flex flex-col rounded-xl overflow-hidden border border-primary/10 animate-pulse"
+      style={{ backgroundColor: "var(--bg-card)" }}
+    >
+      <div className="w-full aspect-square bg-primary/10" />
+      <div className="flex flex-col gap-2 p-4">
+        <div className="h-4 w-full rounded bg-primary/10" />
+        <div className="h-4 w-2/3 rounded bg-primary/10" />
+      </div>
+    </div>
+  );
+}
+
 // ===== Page =====
 export default function GalleryPage() {
+  const [activeCategory, setActiveCategory] = useState<FilterCategory>("All");
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<GalleryCategory>("All");
-  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Gallery | null>(null);
 
-  const filtered = dummyGallery.filter((item) => {
-    const matchCategory =
-      activeCategory === "All" || item.category === activeCategory;
-    const matchSearch = item.title.toLowerCase().includes(search.toLowerCase());
-    return matchCategory && matchSearch;
-  });
+  const category = activeCategory === "All" ? undefined : activeCategory;
+  const { galleries, loading, error } = useGallery(category);
+
+  const filtered = galleries.filter((item) =>
+    item.title.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <div
@@ -258,7 +183,6 @@ export default function GalleryPage() {
       {/* ===== Header ===== */}
       <section className="py-12" style={{ backgroundColor: "var(--bg-page)" }}>
         <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col items-center gap-6">
-          {/* Title */}
           <h1
             className="text-3xl sm:text-4xl font-bold text-center"
             style={{ color: "var(--text-body)" }}
@@ -266,7 +190,7 @@ export default function GalleryPage() {
             Galeri
           </h1>
 
-          {/* Search Bar */}
+          {/* Search */}
           <div className="relative w-full max-w-sm">
             <input
               type="text"
@@ -296,7 +220,7 @@ export default function GalleryPage() {
             </svg>
           </div>
 
-          {/* Filter Tabs */}
+          {/* Filter */}
           <div className="flex items-center gap-1 flex-wrap justify-center">
             <span
               className="text-xs mr-1"
@@ -316,26 +240,42 @@ export default function GalleryPage() {
                     activeCategory === cat ? "#ffffff" : "var(--text-muted)",
                 }}
               >
-                {cat}
+                {categoryLabel[cat]}
               </button>
             ))}
           </div>
 
-          {/* Total foto */}
-          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-            Menampilkan{" "}
-            <span className="font-semibold text-primary">
-              {filtered.length}
-            </span>{" "}
-            foto
-          </p>
+          {/* Counter */}
+          {!loading && (
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              Menampilkan{" "}
+              <span className="font-semibold text-primary">
+                {filtered.length}
+              </span>{" "}
+              foto
+            </p>
+          )}
         </div>
       </section>
 
-      {/* ===== Gallery Grid ===== */}
+      {/* ===== Grid ===== */}
       <section className="pb-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          {filtered.length > 0 ? (
+          {error && (
+            <div className="flex justify-center py-20">
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
+          )}
+
+          {loading && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          )}
+
+          {!loading && !error && filtered.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {filtered.map((item) => (
                 <GalleryCard
@@ -345,7 +285,9 @@ export default function GalleryPage() {
                 />
               ))}
             </div>
-          ) : (
+          )}
+
+          {!loading && !error && filtered.length === 0 && (
             <div
               className="flex flex-col items-center justify-center py-20 gap-3"
               style={{ color: "var(--text-muted)" }}
@@ -363,16 +305,13 @@ export default function GalleryPage() {
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
-              <p className="text-sm">
-                Tidak ada foto ditemukan untuk{" "}
-                <span className="font-semibold">"{search}"</span>
-              </p>
+              <p className="text-sm">Tidak ada foto ditemukan</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* ===== Lightbox ===== */}
+      {/* Lightbox */}
       {selectedItem && (
         <Lightbox item={selectedItem} onClose={() => setSelectedItem(null)} />
       )}
