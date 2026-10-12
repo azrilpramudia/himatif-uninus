@@ -1,8 +1,11 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import type { ReactNode } from "react";
 
 const navigation = [
@@ -41,6 +44,10 @@ const navigation = [
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   if (pathname === "/admin/login") {
     return children;
@@ -177,13 +184,64 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               HIMATIF Universitas Islam Nusantara
             </p>
           </div>
-          <Link
-            href="/"
-            target="_blank"
-            className="rounded-lg px-3 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
-          >
-            Lihat website
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
+              disabled={!mounted}
+              aria-label={
+                resolvedTheme === "dark"
+                  ? "Aktifkan mode terang"
+                  : "Aktifkan mode gelap"
+              }
+              title={
+                resolvedTheme === "dark"
+                  ? "Aktifkan mode terang"
+                  : "Aktifkan mode gelap"
+              }
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-default"
+            >
+              {resolvedTheme === "dark" ? (
+                <svg
+                  aria-hidden="true"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+                </svg>
+              ) : (
+                <svg
+                  aria-hidden="true"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" />
+                </svg>
+              )}
+            </button>
+            <Link
+              href="/"
+              target="_blank"
+              className="rounded-lg px-3 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
+            >
+              Lihat website
+            </Link>
+          </div>
         </header>
         <main className="mx-auto w-full max-w-7xl p-5 sm:p-8">{children}</main>
       </div>
