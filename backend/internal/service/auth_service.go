@@ -30,6 +30,10 @@ func (s *authService) Login(email, password string) (string, error) {
 		return "", errors.New("invalid email or password")
 	}
 
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return "", errors.New("invalid email or password")
+	}
+
 	token, err := generateToken(user)
 	if err != nil {
 		return "", errors.New("failed to generate token")
@@ -50,10 +54,10 @@ func (s *authService) Register(name, email, password string) (*domain.User, erro
 	}
 
 	user := &domain.User{
-		Name:	name,
-		Email:	email,
+		Name:     name,
+		Email:    email,
 		Password: string(hashedPassword),
-		Role:	"admin",
+		Role:     "admin",
 	}
 
 	if err := s.userRepo.Create(user); err != nil {
@@ -66,9 +70,9 @@ func (s *authService) Register(name, email, password string) (*domain.User, erro
 func generateToken(user *domain.User) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": user.ID,
-		"email": user.Email,
-		"role": user.Role,
-		"exp": time.Now().Add(24 * time.Hour).Unix(),
+		"email":   user.Email,
+		"role":    user.Role,
+		"exp":     time.Now().Add(24 * time.Hour).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
