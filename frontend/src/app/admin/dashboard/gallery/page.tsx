@@ -4,6 +4,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { useCallback, useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api";
+import Toast from "@/components/ui/Toast";
+import { useToast } from "@/hooks/useToast";
 import type { Event, EventsResponse } from "@/types/event";
 import type {
   GalleriesResponse,
@@ -172,8 +174,7 @@ export default function GalleryDashboardPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const { toast, showToast, dismissToast } = useToast();
   const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -229,8 +230,6 @@ export default function GalleryDashboardPage() {
     image: File | null,
   ) {
     setSaving(true);
-    setActionError(null);
-    setActionMessage(null);
     try {
       let imageURL = editingGallery?.image_url ?? "";
       if (image) {
@@ -261,16 +260,17 @@ export default function GalleryDashboardPage() {
 
       setShowForm(false);
       setEditingGallery(null);
-      setActionMessage(
-        editingGallery
+      showToast({
+        type: "success",
+        message: editingGallery
           ? "Perubahan foto berhasil disimpan."
           : "Foto berhasil ditambahkan ke galeri.",
-      );
+      });
       await loadContent();
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Gagal menyimpan foto.";
-      setActionError(message);
+      showToast({ type: "error", message });
       throw error;
     } finally {
       setSaving(false);
@@ -281,18 +281,21 @@ export default function GalleryDashboardPage() {
     if (!window.confirm(`Hapus foto "${gallery.title}" dari galeri?`)) return;
 
     setDeletingID(gallery.id);
-    setActionError(null);
-    setActionMessage(null);
     try {
       await fetchAPI(`/api/admin/galleries/${gallery.id}`, {
         method: "DELETE",
       });
-      setActionMessage("Foto berhasil dihapus dari galeri.");
+      showToast({
+        type: "success",
+        message: "Foto berhasil dihapus dari galeri.",
+      });
       await loadContent();
     } catch (error) {
-      setActionError(
-        error instanceof Error ? error.message : "Gagal menghapus foto.",
-      );
+      showToast({
+        type: "error",
+        message:
+          error instanceof Error ? error.message : "Gagal menghapus foto.",
+      });
     } finally {
       setDeletingID(null);
     }
@@ -300,6 +303,7 @@ export default function GalleryDashboardPage() {
 
   return (
     <div className="space-y-6">
+      <Toast toast={toast} onClose={dismissToast} />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -326,20 +330,6 @@ export default function GalleryDashboardPage() {
           + Tambah foto
         </button>
       </div>
-
-      {actionError && (
-        <p role="alert" className="rounded-lg bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
-          {actionError}
-        </p>
-      )}
-      {actionMessage && (
-        <p
-          role="status"
-          className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:text-emerald-300"
-        >
-          {actionMessage}
-        </p>
-      )}
 
       {loading ? (
         <section

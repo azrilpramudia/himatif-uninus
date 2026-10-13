@@ -4,6 +4,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { useCallback, useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api";
+import Toast from "@/components/ui/Toast";
+import { useToast } from "@/hooks/useToast";
 import type { Event, EventStatus, EventsResponse } from "@/types/event";
 
 type EventFormValues = {
@@ -258,8 +260,7 @@ export default function EventsDashboardPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const { toast, showToast, dismissToast } = useToast();
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -299,8 +300,6 @@ export default function EventsDashboardPage() {
 
   async function saveEvent(values: EventFormValues, thumbnail: File | null) {
     setSaving(true);
-    setActionError(null);
-    setActionMessage(null);
     try {
       let thumbnailURL = editingEvent?.thumbnail ?? "";
       if (thumbnail) {
@@ -333,16 +332,17 @@ export default function EventsDashboardPage() {
 
       setShowForm(false);
       setEditingEvent(null);
-      setActionMessage(
-        editingEvent
+      showToast({
+        type: "success",
+        message: editingEvent
           ? "Perubahan kegiatan berhasil disimpan."
           : "Kegiatan berhasil ditambahkan.",
-      );
+      });
       await loadEvents();
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Gagal menyimpan kegiatan.";
-      setActionError(message);
+      showToast({ type: "error", message });
       throw error;
     } finally {
       setSaving(false);
@@ -359,16 +359,16 @@ export default function EventsDashboardPage() {
     }
 
     setDeletingID(event.id);
-    setActionError(null);
-    setActionMessage(null);
     try {
       await fetchAPI(`/api/admin/events/${event.id}`, { method: "DELETE" });
-      setActionMessage("Kegiatan berhasil dihapus.");
+      showToast({ type: "success", message: "Kegiatan berhasil dihapus." });
       await loadEvents();
     } catch (error) {
-      setActionError(
-        error instanceof Error ? error.message : "Gagal menghapus kegiatan.",
-      );
+      showToast({
+        type: "error",
+        message:
+          error instanceof Error ? error.message : "Gagal menghapus kegiatan.",
+      });
     } finally {
       setDeletingID(null);
     }
@@ -376,6 +376,7 @@ export default function EventsDashboardPage() {
 
   return (
     <div className="space-y-6">
+      <Toast toast={toast} onClose={dismissToast} />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -402,20 +403,6 @@ export default function EventsDashboardPage() {
           + Tambah kegiatan
         </button>
       </div>
-
-      {actionError && (
-        <p role="alert" className="rounded-lg bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
-          {actionError}
-        </p>
-      )}
-      {actionMessage && (
-        <p
-          role="status"
-          className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:text-emerald-300"
-        >
-          {actionMessage}
-        </p>
-      )}
 
       <section
         className="overflow-hidden rounded-xl border border-primary/10 shadow-sm"
