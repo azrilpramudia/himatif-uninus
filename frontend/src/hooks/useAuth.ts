@@ -1,29 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { fetchAPI } from "@/lib/api";
-import {
-  loginSchema,
-  type LoginFormData,
-  type LoginResponse,
-} from "@/schemas/authSchema";
-
-function saveToken(token: string) {
-  document.cookie = `admin_token=${token}; path=/; max-age=${60 * 60 * 24}`;
-  localStorage.setItem("admin_token", token);
-}
-
-function clearToken() {
-  document.cookie = "admin_token=; path=/; max-age=0";
-  localStorage.removeItem("admin_token");
-}
-
-function getToken(): string | null {
-  return localStorage.getItem("admin_token");
-}
+import { loginSchema, type LoginFormData } from "@/schemas/authSchema";
 
 export function useLogin() {
   const router = useRouter();
@@ -37,20 +18,27 @@ export function useLogin() {
     resolver: zodResolver(loginSchema),
   });
 
-  // Redirect kalau sudah login
-  useEffect(() => {
-    const token = getToken();
-    if (token) router.replace("/admin/dashboard");
-  }, [router]);
-
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await fetchAPI<LoginResponse>("/api/v1/auth/login", {
+      const response = await fetch("/api/admin/login", {
         method: "POST",
-        body: data,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        cache: "no-store",
       });
 
-      saveToken(response.token);
+      if (!response.ok) {
+        const payload: unknown = await response.json().catch(() => null);
+        const message =
+          typeof payload === "object" &&
+          payload !== null &&
+          "error" in payload &&
+          typeof payload.error === "string"
+            ? payload.error
+            : `Login gagal (${response.status}).`;
+        throw new Error(message);
+      }
+
       router.push("/admin/dashboard");
     } catch (err) {
       setError("root", {
@@ -73,11 +61,29 @@ export function useLogin() {
 
 export function useLogout() {
   const router = useRouter();
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
-  function logout() {
-    clearToken();
-    router.replace("/admin/login");
+  async function logout() {
+    setLogoutError(null);
+    try {
+      const response = await fetch("/api/admin/logout", {
+        method: "POST",
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Logout gagal (${response.status}).`);
+      }
+
+      router.replace("/admin/login");
+    } catch (error) {
+      setLogoutError(
+        error instanceof Error
+          ? error.message
+          : "Tidak dapat keluar. Silakan coba lagi.",
+      );
+    }
   }
 
-  return { logout };
+  return { logout, logoutError };
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,11 +17,15 @@ function getPageTitle(pathname: string): string {
   return "Beranda";
 }
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted] = useState(false);
-  const { logout } = useLogout();
+  const [mounted, setMounted] = useState(false);
+  const { logout, logoutError } = useLogout();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
@@ -80,6 +85,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         {/* Logout */}
         <div className="border-t border-white/10 px-4 py-4">
+          {logoutError && (
+            <p role="alert" className="mb-2 px-3 text-xs text-red-200">
+              {logoutError}
+            </p>
+          )}
           <button
             type="button"
             onClick={logout}
@@ -109,13 +119,23 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               }
               disabled={!mounted}
               aria-label={
-                resolvedTheme === "dark"
+                !mounted
+                  ? "Memuat preferensi tema"
+                  : resolvedTheme === "dark"
                   ? "Aktifkan mode terang"
                   : "Aktifkan mode gelap"
               }
               className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-white transition hover:bg-white/10 disabled:cursor-default"
             >
-              {resolvedTheme === "dark" ? <SunIcon /> : <MoonIcon />}
+              {mounted ? (
+                resolvedTheme === "dark" ? (
+                  <SunIcon />
+                ) : (
+                  <MoonIcon />
+                )
+              ) : (
+                <span aria-hidden="true" className="h-5 w-5" />
+              )}
             </button>
             <Link
               href="/"

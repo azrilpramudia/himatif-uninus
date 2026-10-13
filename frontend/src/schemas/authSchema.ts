@@ -9,8 +9,3 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
-
-export type LoginResponse = {
-  message: string;
-  token: string;
-};

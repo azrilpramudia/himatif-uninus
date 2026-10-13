@@ -29,13 +29,23 @@ export default function LoginPage() {
         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
         disabled={!mounted}
         aria-label={
-          resolvedTheme === "dark"
+          !mounted
+            ? "Memuat preferensi tema"
+            : resolvedTheme === "dark"
             ? "Aktifkan mode terang"
             : "Aktifkan mode gelap"
         }
         className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-primary/15 text-primary transition hover:bg-primary/10 disabled:cursor-default"
       >
-        {resolvedTheme === "dark" ? <SunIcon /> : <MoonIcon />}
+        {mounted ? (
+          resolvedTheme === "dark" ? (
+            <SunIcon />
+          ) : (
+            <MoonIcon />
+          )
+        ) : (
+          <span aria-hidden="true" className="h-5 w-5" />
+        )}
       </button>
 
       {/* Decorations */}
