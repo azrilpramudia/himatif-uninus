@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { galleryCategoryLabels } from "@/constants/adminContent";
 import { useGallery } from "@/hooks/useGallery";
 import type { Gallery, GalleryCategory } from "@/types/gallery";
 
@@ -17,10 +18,7 @@ const categories: FilterCategory[] = [
 
 const categoryLabel: Record<FilterCategory, string> = {
   All: "All",
-  kegiatan: "Kegiatan",
-  prestasi: "Prestasi",
-  organisasi: "Organisasi",
-  lainnya: "Lainnya",
+  ...galleryCategoryLabels,
 };
 
 const badgeColor: Record<FilterCategory, string> = {

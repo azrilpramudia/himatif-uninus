@@ -2,21 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { eventStatusLabels, eventStatusStyles } from "@/constants/adminContent";
+import { AdminSummaryIcon } from "@/components/icons/AdminSummaryIcons";
 import { useEvents } from "@/hooks/useEvents";
 import { useGallery } from "@/hooks/useGallery";
-import type { Event, EventStatus } from "@/types/event";
-
-const statusLabels: Record<EventStatus, string> = {
-  upcoming: "Akan datang",
-  ongoing: "Berlangsung",
-  completed: "Selesai",
-};
-
-const statusStyles: Record<EventStatus, string> = {
-  upcoming: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  ongoing: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  completed: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
-};
+import type { Event } from "@/types/event";
 
 function formatDate(value: string) {
   const date = new Date(value);
@@ -29,52 +19,12 @@ function formatDate(value: string) {
   }).format(date);
 }
 
-function SummaryIcon({ type }: { type: "events" | "gallery" | "upcoming" }) {
-  const paths = {
-    events: (
-      <>
-        <rect x="3" y="4" width="18" height="17" rx="2" />
-        <path d="M16 2v4M8 2v4M3 10h18M8 14h3" />
-      </>
-    ),
-    gallery: (
-      <>
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <circle cx="8.5" cy="8.5" r="1.5" />
-        <path d="m21 15-5-5L5 21" />
-      </>
-    ),
-    upcoming: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7v5l3 2" />
-      </>
-    ),
-  };
-
-  return (
-    <svg
-      aria-hidden="true"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {paths[type]}
-    </svg>
-  );
-}
-
 function EventRow({ event }: { event: Event }) {
   return (
     <li className="flex flex-col gap-3 rounded-xl border border-primary/10 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <SummaryIcon type="events" />
+          <AdminSummaryIcon type="events" />
         </div>
         <div className="min-w-0">
           <p
@@ -90,9 +40,9 @@ function EventRow({ event }: { event: Event }) {
         </div>
       </div>
       <span
-        className={`w-fit shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${statusStyles[event.status]}`}
+        className={`w-fit shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${eventStatusStyles[event.status]}`}
       >
-        {statusLabels[event.status]}
+        {eventStatusLabels[event.status]}
       </span>
     </li>
   );
@@ -224,7 +174,7 @@ export default function DashboardPage() {
                 </p>
               </div>
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <SummaryIcon type={summary.type} />
+                <AdminSummaryIcon type={summary.type} />
               </span>
             </div>
             <p className="mt-4 text-xs" style={{ color: "var(--text-muted)" }}>
@@ -329,7 +279,7 @@ export default function DashboardPage() {
               className="flex items-center gap-3 rounded-xl border border-primary/10 p-4 transition hover:border-primary/30 hover:bg-primary/5"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <SummaryIcon type="events" />
+                <AdminSummaryIcon type="events" />
               </span>
               <span className="min-w-0 flex-1">
                 <span
@@ -354,7 +304,7 @@ export default function DashboardPage() {
               className="flex items-center gap-3 rounded-xl border border-primary/10 p-4 transition hover:border-primary/30 hover:bg-primary/5"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <SummaryIcon type="gallery" />
+                <AdminSummaryIcon type="gallery" />
               </span>
               <span className="min-w-0 flex-1">
                 <span
