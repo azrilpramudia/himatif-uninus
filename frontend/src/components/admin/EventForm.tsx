@@ -1,9 +1,13 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { eventStatusLabels, MAX_UPLOAD_SIZE } from "@/constants/adminContent";
+import ImageUploadField from "@/components/admin/ImageUploadField";
+import {
+  adminFormFieldClass,
+  eventStatusLabels,
+  MAX_UPLOAD_SIZE,
+} from "@/constants/adminContent";
 import { useModalUX } from "@/hooks/useModalUX";
 import { useObjectUrl } from "@/hooks/useObjectUrl";
 import { adminEventFormSchema } from "@/schemas/adminEventFormSchema";
@@ -131,7 +135,7 @@ export default function EventForm({
               maxLength={200}
               value={values.title}
               onChange={(inputEvent) => update("title", inputEvent.target.value)}
-              className="mt-1 h-10 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+              className={`mt-1 h-10 w-full rounded-lg px-3 ${adminFormFieldClass}`}
             />
           </label>
 
@@ -145,7 +149,7 @@ export default function EventForm({
                 onChange={(inputEvent) =>
                   update("start_date", inputEvent.target.value)
                 }
-                className="mt-1 h-10 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+                className={`mt-1 h-10 w-full rounded-lg px-3 ${adminFormFieldClass}`}
               />
             </label>
             <label className="block text-sm font-medium">
@@ -157,7 +161,7 @@ export default function EventForm({
                 onChange={(inputEvent) =>
                   update("end_date", inputEvent.target.value)
                 }
-                className="mt-1 h-10 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+                className={`mt-1 h-10 w-full rounded-lg px-3 ${adminFormFieldClass}`}
               />
             </label>
           </div>
@@ -171,7 +175,7 @@ export default function EventForm({
                 onChange={(inputEvent) =>
                   update("location", inputEvent.target.value)
                 }
-                className="mt-1 h-10 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+                className={`mt-1 h-10 w-full rounded-lg px-3 ${adminFormFieldClass}`}
               />
             </label>
             <label className="block text-sm font-medium">
@@ -181,7 +185,7 @@ export default function EventForm({
                 onChange={(inputEvent) =>
                   update("status", inputEvent.target.value as EventStatus)
                 }
-                className="mt-1 h-10 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+                className={`mt-1 h-10 w-full rounded-lg px-3 ${adminFormFieldClass}`}
               >
                 {Object.entries(eventStatusLabels).map(([value, label]) => (
                   <option key={value} value={value}>
@@ -201,7 +205,7 @@ export default function EventForm({
                 onChange={(inputEvent) =>
                   update("description", inputEvent.target.value)
                 }
-                className="mt-1 min-h-36 w-full rounded-lg border border-primary/15 bg-transparent px-3 py-2"
+                className={`mt-1 min-h-36 w-full resize-y rounded-lg px-3 py-2 ${adminFormFieldClass}`}
               />
             </label>
             <label className="block text-sm font-medium">
@@ -212,45 +216,24 @@ export default function EventForm({
                 onChange={(inputEvent) =>
                   update("content", inputEvent.target.value)
                 }
-                className="mt-1 min-h-36 w-full rounded-lg border border-primary/15 bg-transparent px-3 py-2"
+                className={`mt-1 min-h-36 w-full resize-y rounded-lg px-3 py-2 ${adminFormFieldClass}`}
               />
             </label>
           </div>
 
-          <label className="block text-sm font-medium">
-            <span>Gambar thumbnail</span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={(inputEvent) =>
-                setThumbnail(inputEvent.target.files?.[0] ?? null)
-              }
-              className="mt-1.5 block w-full text-sm"
-            />
-            <span
-              className="mt-1 block text-xs"
-              style={{ color: "var(--text-muted)" }}
-            >
-              JPG, PNG, atau WEBP; maksimal 5 MB.
-              {event?.thumbnail && !thumbnail
-                ? " Gambar saat ini akan tetap digunakan."
-                : ""}
-            </span>
-            {(thumbnailPreview || event?.thumbnail) && (
-                <img
-                  src={
-                    thumbnailPreview ??
-                    `${process.env.NEXT_PUBLIC_API_URL}${event?.thumbnail}`
-                  }
-                  alt={
-                    thumbnail
-                      ? `Pratinjau gambar ${thumbnail.name}`
-                      : "Thumbnail kegiatan saat ini"
-                  }
-                  className="mt-3 h-32 w-full rounded-lg border border-primary/10 bg-primary/5 object-cover sm:w-56"
-                />
-            )}
-          </label>
+          <ImageUploadField
+            id="event-thumbnail"
+            label="Gambar thumbnail"
+            selectedFile={thumbnail}
+            previewUrl={thumbnailPreview}
+            existingImageUrl={
+              event?.thumbnail
+                ? `${process.env.NEXT_PUBLIC_API_URL}${event.thumbnail}`
+                : undefined
+            }
+            existingImageAlt="Thumbnail kegiatan saat ini"
+            onSelect={setThumbnail}
+          />
 
           {formError && (
             <p role="alert" className="text-sm text-red-600 dark:text-red-400">

@@ -3,6 +3,9 @@ import type { GalleryCategory } from "@/types/gallery";
 
 export const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
 
+export const adminFormFieldClass =
+  "border border-primary/15 bg-[var(--bg-input)] text-[var(--text-body)] outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20";
+
 export const eventStatusLabels: Record<EventStatus, string> = {
   upcoming: "Akan datang",
   ongoing: "Berlangsung",

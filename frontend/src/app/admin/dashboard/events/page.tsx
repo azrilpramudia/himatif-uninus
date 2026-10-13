@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
 import EventForm from "@/components/admin/EventForm";
 import Toast from "@/components/ui/Toast";
 import { eventStatusLabels } from "@/constants/adminContent";
@@ -32,6 +33,7 @@ export default function EventsDashboardPage() {
   } = useAdminEvents();
   const { toast, showToast, dismissToast } = useToast();
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<EventStatus | "all">("all");
@@ -75,17 +77,11 @@ export default function EventsDashboardPage() {
     }
   }
 
-  async function deleteEvent(event: Event) {
-    if (
-      !window.confirm(
-        `Hapus kegiatan "${event.title}"? Foto galeri yang terhubung juga akan terhapus.`,
-      )
-    ) {
-      return;
-    }
-
+  async function confirmDeleteEvent() {
+    if (!eventToDelete) return;
     try {
-      await removeEvent(event);
+      await removeEvent(eventToDelete);
+      setEventToDelete(null);
       showToast({ type: "success", message: "Kegiatan berhasil dihapus." });
     } catch (error) {
       showToast({
@@ -291,7 +287,7 @@ export default function EventsDashboardPage() {
                   <button
                     type="button"
                     disabled={deletingID === event.id}
-                    onClick={() => void deleteEvent(event)}
+                    onClick={() => setEventToDelete(event)}
                     className="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-50"
                   >
                     {deletingID === event.id ? "Menghapus..." : "Hapus"}
@@ -311,6 +307,17 @@ export default function EventsDashboardPage() {
             saving={saving}
             onCancel={closeForm}
             onSave={saveEvent}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {eventToDelete && (
+          <DeleteConfirmationDialog
+            itemName="kegiatan"
+            description={`"${eventToDelete.title}" akan dihapus. Foto galeri yang terhubung juga akan ikut terhapus.`}
+            deleting={deletingID === eventToDelete.id}
+            onCancel={() => setEventToDelete(null)}
+            onConfirm={() => void confirmDeleteEvent()}
           />
         )}
       </AnimatePresence>

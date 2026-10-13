@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { galleryCategoryLabels, MAX_UPLOAD_SIZE } from "@/constants/adminContent";
+import ImageUploadField from "@/components/admin/ImageUploadField";
+import {
+  adminFormFieldClass,
+  galleryCategoryLabels,
+  MAX_UPLOAD_SIZE,
+} from "@/constants/adminContent";
 import { useModalUX } from "@/hooks/useModalUX";
 import { useObjectUrl } from "@/hooks/useObjectUrl";
 import { adminGalleryFormSchema } from "@/schemas/adminGalleryFormSchema";
@@ -120,7 +124,7 @@ export default function GalleryForm({
               maxLength={200}
               value={title}
               onChange={(inputEvent) => setTitle(inputEvent.target.value)}
-              className="mt-1.5 h-11 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+              className={`mt-1.5 h-11 w-full rounded-lg px-3 ${adminFormFieldClass}`}
             />
           </label>
 
@@ -132,7 +136,7 @@ export default function GalleryForm({
               onChange={(inputEvent) =>
                 setCategory(inputEvent.target.value as GalleryCategory)
               }
-              className="mt-1.5 h-11 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+              className={`mt-1.5 h-11 w-full rounded-lg px-3 ${adminFormFieldClass}`}
             >
               {Object.entries(galleryCategoryLabels).map(([value, label]) => (
                 <option key={value} value={value}>
@@ -147,7 +151,7 @@ export default function GalleryForm({
             <select
               value={eventID}
               onChange={(inputEvent) => setEventID(inputEvent.target.value)}
-              className="mt-1.5 h-11 w-full rounded-lg border border-primary/15 bg-transparent px-3"
+              className={`mt-1.5 h-11 w-full rounded-lg px-3 ${adminFormFieldClass}`}
             >
               <option value="">Tidak dikaitkan</option>
               {events.map((event) => (
@@ -158,49 +162,19 @@ export default function GalleryForm({
             </select>
           </label>
 
-          <label className="block text-sm font-medium">
-            <span>Gambar {gallery ? "(opsional)" : "*"}</span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required={!gallery}
-              onChange={(inputEvent) =>
-                setImage(inputEvent.target.files?.[0] ?? null)
-              }
-              className="mt-1.5 block w-full text-sm"
-            />
-            <span
-              className="mt-1 block text-xs"
-              style={{ color: "var(--text-muted)" }}
-            >
-              JPG, PNG, atau WEBP; maksimal 5 MB.
-              {gallery && !image
-                ? " Gambar saat ini akan tetap digunakan."
-                : ""}
-            </span>
-            {(imagePreview || gallery) && (
-              <div className="mt-3 flex items-center gap-3 rounded-lg border border-primary/10 p-2">
-                <Image
-                  src={
-                    imagePreview ??
-                    `${process.env.NEXT_PUBLIC_API_URL}${gallery?.image_url}`
-                  }
-                  alt={
-                    image
-                      ? `Pratinjau gambar ${image.name}`
-                      : gallery?.title ?? "Gambar galeri saat ini"
-                  }
-                  width={96}
-                  height={72}
-                  unoptimized={Boolean(imagePreview)}
-                  className="h-18 w-24 rounded-md bg-primary/5 object-cover"
-                />
-                <span className="min-w-0 text-xs" style={{ color: "var(--text-muted)" }}>
-                  {image ? image.name : "Gambar saat ini"}
-                </span>
-              </div>
-            )}
-          </label>
+          <ImageUploadField
+            id="gallery-image"
+            label={`Gambar ${gallery ? "(opsional)" : "*"}`}
+            selectedFile={image}
+            previewUrl={imagePreview}
+            existingImageUrl={
+              gallery
+                ? `${process.env.NEXT_PUBLIC_API_URL}${gallery.image_url}`
+                : undefined
+            }
+            existingImageAlt={gallery?.title}
+            onSelect={setImage}
+          />
 
           {formError && (
             <p role="alert" className="text-sm text-red-600 dark:text-red-400">

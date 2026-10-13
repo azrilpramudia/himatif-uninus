@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
 import GalleryForm from "@/components/admin/GalleryForm";
 import Toast from "@/components/ui/Toast";
 import { galleryCategoryLabels } from "@/constants/adminContent";
@@ -25,6 +26,7 @@ export default function GalleryDashboardPage() {
   } = useAdminGallery();
   const { toast, showToast, dismissToast } = useToast();
   const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
+  const [galleryToDelete, setGalleryToDelete] = useState<Gallery | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<GalleryCategory | "all">(
@@ -71,10 +73,11 @@ export default function GalleryDashboardPage() {
     }
   }
 
-  async function deleteGallery(gallery: Gallery) {
-    if (!window.confirm(`Hapus foto "${gallery.title}" dari galeri?`)) return;
+  async function confirmDeleteGallery() {
+    if (!galleryToDelete) return;
     try {
-      await removeGallery(gallery);
+      await removeGallery(galleryToDelete);
+      setGalleryToDelete(null);
       showToast({
         type: "success",
         message: "Foto berhasil dihapus dari galeri.",
@@ -288,7 +291,7 @@ export default function GalleryDashboardPage() {
                       <button
                         type="button"
                         disabled={deletingID === gallery.id}
-                        onClick={() => void deleteGallery(gallery)}
+                        onClick={() => setGalleryToDelete(gallery)}
                         className="flex-1 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-50"
                       >
                         {deletingID === gallery.id ? "Menghapus..." : "Hapus"}
@@ -311,6 +314,17 @@ export default function GalleryDashboardPage() {
             saving={saving}
             onCancel={closeForm}
             onSave={saveGallery}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {galleryToDelete && (
+          <DeleteConfirmationDialog
+            itemName="foto galeri"
+            description={`"${galleryToDelete.title}" akan dihapus secara permanen dari galeri.`}
+            deleting={deletingID === galleryToDelete.id}
+            onCancel={() => setGalleryToDelete(null)}
+            onConfirm={() => void confirmDeleteGallery()}
           />
         )}
       </AnimatePresence>
