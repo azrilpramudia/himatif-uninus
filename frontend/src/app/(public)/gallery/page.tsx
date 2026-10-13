@@ -68,6 +68,7 @@ function Lightbox({ item, onClose }: { item: Gallery; onClose: () => void }) {
             alt={item.title}
             fill
             className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 768px"
           />
         </div>
 
@@ -111,6 +112,7 @@ function GalleryCard({
           alt={item.title}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/30 transition-all duration-300 flex items-center justify-center">
           <svg

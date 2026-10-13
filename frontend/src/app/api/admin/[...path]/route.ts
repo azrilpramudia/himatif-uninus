@@ -42,7 +42,7 @@ async function forwardAdminRequest(
       body:
         request.method === "GET" || request.method === "HEAD"
           ? undefined
-          : await request.text(),
+          : await request.arrayBuffer(),
       cache: "no-store",
     });
   } catch {

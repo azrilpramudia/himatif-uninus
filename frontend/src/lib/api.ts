@@ -13,18 +13,29 @@ export async function fetchAPI<T>(
 ): Promise<T> {
   const { method = "GET", body } = options;
 
-  if (!BASE_URL) {
+  const isAdminRequest = endpoint.startsWith("/api/admin/");
+  if (!isAdminRequest && !BASE_URL) {
     throw new Error("NEXT_PUBLIC_API_URL belum dikonfigurasi.");
   }
 
-  const headers = new Headers({ "Content-Type": "application/json" });
+  const headers = new Headers();
+  let requestBody: BodyInit | undefined;
+  if (body instanceof FormData) {
+    requestBody = body;
+  } else if (body !== undefined) {
+    headers.set("Content-Type", "application/json");
+    requestBody = typeof body === "string" ? body : JSON.stringify(body);
+  }
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method,
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
-    cache: "no-store",
-  });
+  const res = await fetch(
+    isAdminRequest ? endpoint : `${BASE_URL}${endpoint}`,
+    {
+      method,
+      headers,
+      body: requestBody,
+      cache: "no-store",
+    },
+  );
 
   if (!res.ok) {
     const error: unknown = await res.json().catch(() => null);

@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/azrilpramudia/himatif-uninus/helper"
 	domain "github.com/azrilpramudia/himatif-uninus/internal/domain/entity"
@@ -25,10 +26,10 @@ type CreateGalleryInput struct {
 }
 
 type UpdateGalleryInput struct {
-	Title    string `json:"title"`
-	ImageURL string `json:"image_url"`
-	Category string `json:"category"`
-	EventID  string `json:"event_id"`
+	Title    *string `json:"title"`
+	ImageURL *string `json:"image_url"`
+	Category *string `json:"category"`
+	EventID  *string `json:"event_id"`
 }
 
 type galleryService struct {
@@ -65,9 +66,18 @@ func (s *galleryService) GetByCategory(category string) ([]domain.Gallery, error
 }
 
 func (s *galleryService) Create(input CreateGalleryInput) (*domain.Gallery, error) {
+	input.Title = strings.TrimSpace(input.Title)
+	input.ImageURL = strings.TrimSpace(input.ImageURL)
+	if input.Title == "" || input.ImageURL == "" {
+		return nil, errors.New("title and image_url are required")
+	}
+
 	category := domain.CategoryLainnya
 	if input.Category != "" {
 		category = domain.GalleryCategory(input.Category)
+		if !isValidGalleryCategory(category) {
+			return nil, errors.New("invalid category")
+		}
 	}
 
 	gallery := &domain.Gallery{
@@ -96,27 +106,50 @@ func (s *galleryService) Update(id string, input UpdateGalleryInput) (*domain.Ga
 		return nil, errors.New("gallery not found")
 	}
 
-	if input.Title != "" {
-		gallery.Title = input.Title
-	}
-	if input.ImageURL != "" {
-		gallery.ImageURL = input.ImageURL
-	}
-	if input.Category != "" {
-		gallery.Category = domain.GalleryCategory(input.Category)
-	}
-	if input.EventID != "" {
-		eventID, err := helper.ParseUUID(input.EventID)
-		if err != nil {
-			return nil, errors.New("invalid event_id format")
+	if input.Title != nil {
+		title := strings.TrimSpace(*input.Title)
+		if title == "" {
+			return nil, errors.New("title is required")
 		}
-		gallery.EventID = &eventID
+		gallery.Title = title
+	}
+	if input.ImageURL != nil {
+		imageURL := strings.TrimSpace(*input.ImageURL)
+		if imageURL == "" {
+			return nil, errors.New("image_url is required")
+		}
+		gallery.ImageURL = imageURL
+	}
+	if input.Category != nil {
+		category := domain.GalleryCategory(*input.Category)
+		if !isValidGalleryCategory(category) {
+			return nil, errors.New("invalid category")
+		}
+		gallery.Category = category
+	}
+	if input.EventID != nil {
+		if *input.EventID == "" {
+			gallery.EventID = nil
+		} else {
+			eventID, err := helper.ParseUUID(*input.EventID)
+			if err != nil {
+				return nil, errors.New("invalid event_id format")
+			}
+			gallery.EventID = &eventID
+		}
 	}
 
 	if err := s.repo.Update(gallery); err != nil {
 		return nil, err
 	}
 	return gallery, nil
+}
+
+func isValidGalleryCategory(category domain.GalleryCategory) bool {
+	return category == domain.CategoryKegiatan ||
+		category == domain.CategoryPrestasi ||
+		category == domain.CategoryOrganisasi ||
+		category == domain.CategoryLainnya
 }
 
 func (s *galleryService) Delete(id string) error {

@@ -137,6 +137,8 @@ export default function EventDetailPage() {
                 fill
                 className="object-cover"
                 priority
+                loading="eager"
+                sizes="(max-width: 768px) 100vw, 768px"
               />
             </div>
           )}

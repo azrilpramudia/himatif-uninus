@@ -45,6 +45,7 @@ function EventCard({ event }: { event: Event }) {
             alt={event.title}
             fill
             className="object-cover transition-transform duration-300 hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

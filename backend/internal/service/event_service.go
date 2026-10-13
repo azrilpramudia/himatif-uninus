@@ -34,18 +34,18 @@ type CreateEventInput struct {
 }
 
 type UpdateEventInput struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Content     string    `json:"content"`
-	Thumbnail   string    `json:"thumbnail"`
-	Location    string    `json:"location"`
-	Status      string    `json:"status"`
-	StartDate   time.Time `json:"start_date"`
-	EndDate     time.Time `json:"end_date"`
+	Title       *string    `json:"title"`
+	Description *string    `json:"description"`
+	Content     *string    `json:"content"`
+	Thumbnail   *string    `json:"thumbnail"`
+	Location    *string    `json:"location"`
+	Status      *string    `json:"status"`
+	StartDate   *time.Time `json:"start_date"`
+	EndDate     *time.Time `json:"end_date"`
 }
 
 type eventService struct {
-	repo repository.EventRepository
+	repo        repository.EventRepository
 	galleryRepo repository.GalleryRepository
 }
 
@@ -72,6 +72,10 @@ func (s *eventService) GetBySlug(slug string) (*domain.Event, error) {
 }
 
 func (s *eventService) Create(input CreateEventInput) (*domain.Event, error) {
+	input.Title = strings.TrimSpace(input.Title)
+	if input.Title == "" {
+		return nil, errors.New("title is required")
+	}
 	if input.EndDate.Before(input.StartDate) {
 		return nil, errors.New("end date cannot be before start date")
 	}
@@ -79,6 +83,9 @@ func (s *eventService) Create(input CreateEventInput) (*domain.Event, error) {
 	status := domain.EventStatusUpcoming
 	if input.Status != "" {
 		status = domain.EventStatus(input.Status)
+		if !isValidEventStatus(status) {
+			return nil, errors.New("invalid event status")
+		}
 	}
 
 	event := &domain.Event{
@@ -105,29 +112,43 @@ func (s *eventService) Update(id string, input UpdateEventInput) (*domain.Event,
 		return nil, errors.New("event not found")
 	}
 
-	if input.Title != "" {
-		event.Title = input.Title
+	if input.Title != nil {
+		title := strings.TrimSpace(*input.Title)
+		if title == "" {
+			return nil, errors.New("title is required")
+		}
+		if title != event.Title {
+			event.Slug = generateSlug(title)
+		}
+		event.Title = title
 	}
-	if input.Description != "" {
-		event.Description = input.Description
+	if input.Description != nil {
+		event.Description = *input.Description
 	}
-	if input.Content != "" {
-		event.Content = input.Content
+	if input.Content != nil {
+		event.Content = *input.Content
 	}
-	if input.Thumbnail != "" {
-		event.Thumbnail = input.Thumbnail
+	if input.Thumbnail != nil {
+		event.Thumbnail = *input.Thumbnail
 	}
-	if input.Location != "" {
-		event.Location = input.Location
+	if input.Location != nil {
+		event.Location = *input.Location
 	}
-	if input.Status != "" {
-		event.Status = domain.EventStatus(input.Status)
+	if input.Status != nil {
+		status := domain.EventStatus(*input.Status)
+		if !isValidEventStatus(status) {
+			return nil, errors.New("invalid event status")
+		}
+		event.Status = status
 	}
-	if !input.StartDate.IsZero() {
-		event.StartDate = input.StartDate
+	if input.StartDate != nil {
+		event.StartDate = *input.StartDate
 	}
-	if !input.EndDate.IsZero() {
-		event.EndDate = input.EndDate
+	if input.EndDate != nil {
+		event.EndDate = *input.EndDate
+	}
+	if event.EndDate.Before(event.StartDate) {
+		return nil, errors.New("end date cannot be before start date")
 	}
 
 	if err := s.repo.Update(event); err != nil {
@@ -136,19 +157,25 @@ func (s *eventService) Update(id string, input UpdateEventInput) (*domain.Event,
 	return event, nil
 }
 
+func isValidEventStatus(status domain.EventStatus) bool {
+	return status == domain.EventStatusUpcoming ||
+		status == domain.EventStatusOngoing ||
+		status == domain.EventStatusCompleted
+}
+
 func (s *eventService) Delete(id string) error {
-    event, err := s.repo.FindByID(id)
-    if err != nil {
-        return errors.New("event not found")
-    }
+	event, err := s.repo.FindByID(id)
+	if err != nil {
+		return errors.New("event not found")
+	}
 
-    galleries, err := s.galleryRepo.FindByEventID(id)
-    if err == nil {
-        // Hapus file fisik semua gallery
-        for _, g := range galleries {
-            helper.DeleteImage(g.ImageURL)
-        }
-    }
+	galleries, err := s.galleryRepo.FindByEventID(id)
+	if err == nil {
+		// Hapus file fisik semua gallery
+		for _, g := range galleries {
+			helper.DeleteImage(g.ImageURL)
+		}
+	}
 
-    return s.repo.Delete(event.ID.String())
+	return s.repo.Delete(event.ID.String())
 }

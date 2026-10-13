@@ -46,6 +46,7 @@ export default function Navbar() {
               alt={siteConfig.logoAlt}
               width={40}
               height={40}
+              loading="eager"
               className="object-contain"
             />
             <div className="flex flex-col leading-none">

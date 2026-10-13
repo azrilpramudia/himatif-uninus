@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* ===== Main Content ===== */}
       <div className="min-w-0 lg:pl-64">
         {/* Header */}
-        <header className="flex h-16 items-center justify-between bg-primary px-5 text-white shadow-sm sm:px-8">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between bg-primary px-5 text-white shadow-sm sm:px-8">
           <div>
             <p className="text-sm font-semibold">{getPageTitle(pathname)}</p>
             <p className="mt-0.5 text-[11px] text-white/65">

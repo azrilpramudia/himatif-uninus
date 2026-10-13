@@ -100,6 +100,8 @@ export default function HeroSection() {
                   fill
                   className="object-contain drop-shadow-lg"
                   priority
+                  loading="eager"
+                  sizes="(max-width: 640px) 208px, (max-width: 768px) 256px, 288px"
                 />
               </div>
             </div>

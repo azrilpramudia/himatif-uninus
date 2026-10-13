@@ -194,6 +194,7 @@ export default function AboutPage() {
                   alt="Logo Himatif Uninus"
                   fill
                   className="object-contain drop-shadow-xl"
+                  sizes="(max-width: 640px) 256px, 320px"
                 />
               </div>
             </motion.div>

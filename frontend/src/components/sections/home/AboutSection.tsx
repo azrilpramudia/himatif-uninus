@@ -82,6 +82,7 @@ export default function AboutSection() {
                 alt="Ilustrasi Tentang Himatif"
                 fill
                 className="object-contain"
+                sizes="(max-width: 768px) 288px, 384px"
               />
             </div>
           </motion.div>
