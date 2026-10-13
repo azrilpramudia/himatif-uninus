@@ -7,16 +7,16 @@ import (
 )
 
 type Handlers struct {
-	Auth 	*handler.AuthHandler
-	Event *handler.EventHandler
+	Auth    *handler.AuthHandler
+	Event   *handler.EventHandler
 	Gallery *handler.GalleryHandler
 }
 
 func SetupRouter(h *Handlers) *gin.Engine {
 	r := gin.Default()
-	
+
 	r.Use(middleware.CORSMiddleware())
-	
+
 	// Health Check
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok", "message": "Backend is running"})
@@ -26,13 +26,12 @@ func SetupRouter(h *Handlers) *gin.Engine {
 	r.Static("/docs", "./docs/api")
 
 	// API v1
-	v1 := r.Group("/api/v1") 
+	v1 := r.Group("/api/v1")
 	{
 		// Auth - public
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/login", h.Auth.Login)
-			auth.POST("/register", h.Auth.Register)
 		}
 
 		// Events - public read
@@ -51,8 +50,10 @@ func SetupRouter(h *Handlers) *gin.Engine {
 
 		// Admin - protected routes
 		admin := v1.Group("/admin")
-		admin.Use(middleware.AuthMiddleware())
+		admin.Use(middleware.AuthMiddleware(), middleware.RequireRole("admin"))
 		{
+			admin.POST("/users", h.Auth.RegisterAdmin)
+
 			// Event CRUD
 			adminEvents := admin.Group("/events")
 			{

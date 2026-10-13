@@ -11,6 +11,13 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		secret := os.Getenv("JWT_SECRET")
+		if secret == "" {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "authentication is not configured"})
+			c.Abort()
+			return
+		}
+
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header required"})
@@ -26,12 +33,19 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		tokenString := parts[1]
-		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET")), nil
-		})
+		token, err := jwt.Parse(
+			tokenString,
+			func(t *jwt.Token) (interface{}, error) {
+				if t.Method != jwt.SigningMethodHS256 {
+					return nil, jwt.ErrSignatureInvalid
+				}
+				return []byte(secret), nil
+			},
+			jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
+		)
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid ot expired token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
 			c.Abort()
 			return
 		}
@@ -43,9 +57,31 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("user_id", claims["user_id"])
-		c.Set("email", claims["email"])
-		c.Set("role", claims["role"])
+		userID, userIDOK := claims["user_id"].(string)
+		email, emailOK := claims["email"].(string)
+		role, roleOK := claims["role"].(string)
+		if !userIDOK || userID == "" || !emailOK || email == "" || !roleOK || role == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+			c.Abort()
+			return
+		}
+
+		c.Set("user_id", userID)
+		c.Set("email", email)
+		c.Set("role", role)
+		c.Next()
+	}
+}
+
+func RequireRole(role string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole, ok := c.Get("role")
+		if !ok || userRole != role {
+			c.JSON(http.StatusForbidden, gin.H{"error": "insufficient permissions"})
+			c.Abort()
+			return
+		}
+
 		c.Next()
 	}
 }

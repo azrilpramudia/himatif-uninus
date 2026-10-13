@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -9,11 +10,14 @@ import (
 	"github.com/azrilpramudia/himatif-uninus/internal/repository"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
+
+var ErrEmailAlreadyRegistered = errors.New("email already registered")
 
 type AuthService interface {
 	Login(email, password string) (string, error)
-	Register(name, email, password string) (*domain.User, error)
+	RegisterAdmin(name, email, password string) (*domain.User, error)
 }
 
 type authService struct {
@@ -29,6 +33,9 @@ func (s *authService) Login(email, password string) (string, error) {
 	if err != nil {
 		return "", errors.New("invalid email or password")
 	}
+	if user.Role != "admin" {
+		return "", errors.New("invalid email or password")
+	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return "", errors.New("invalid email or password")
@@ -42,10 +49,13 @@ func (s *authService) Login(email, password string) (string, error) {
 	return token, nil
 }
 
-func (s *authService) Register(name, email, password string) (*domain.User, error) {
-	existing, _ := s.userRepo.FindByEmail(email)
-	if existing != nil {
-		return nil, errors.New("email already registered")
+func (s *authService) RegisterAdmin(name, email, password string) (*domain.User, error) {
+	_, err := s.userRepo.FindByEmail(email)
+	if err == nil {
+		return nil, ErrEmailAlreadyRegistered
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, fmt.Errorf("check existing admin: %w", err)
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -61,13 +71,18 @@ func (s *authService) Register(name, email, password string) (*domain.User, erro
 	}
 
 	if err := s.userRepo.Create(user); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("create admin: %w", err)
 	}
 
 	return user, nil
 }
 
 func generateToken(user *domain.User) (string, error) {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		return "", errors.New("JWT_SECRET is not configured")
+	}
+
 	claims := jwt.MapClaims{
 		"user_id": user.ID,
 		"email":   user.Email,
@@ -76,5 +91,5 @@ func generateToken(user *domain.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	return token.SignedString([]byte(secret))
 }

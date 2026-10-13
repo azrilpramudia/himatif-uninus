@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/azrilpramudia/himatif-uninus/internal/service"
@@ -45,16 +46,21 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	})
 }
 
-func (h *AuthHandler) Register(c *gin.Context) {
+func (h *AuthHandler) RegisterAdmin(c *gin.Context) {
 	var input RegisterInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user, err := h.service.Register(input.Name, input.Email, input.Password)
+	user, err := h.service.RegisterAdmin(input.Name, input.Email, input.Password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		switch {
+		case errors.Is(err, service.ErrEmailAlreadyRegistered):
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create admin"})
+		}
 		return
 	}
 

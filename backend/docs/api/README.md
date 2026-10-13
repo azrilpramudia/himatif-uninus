@@ -34,7 +34,6 @@ Token is obtained after login via `POST /api/v1/auth/login`.
 | Method | Endpoint                              | Description                  |
 | ------ | ------------------------------------- | ---------------------------- |
 | GET    | `/health`                             | Health check                 |
-| POST   | `/api/v1/auth/register`               | Register admin               |
 | POST   | `/api/v1/auth/login`                  | Login admin                  |
 | GET    | `/api/v1/events`                      | Get all events               |
 | GET    | `/api/v1/events/:slug`                | Get event by slug            |
@@ -42,21 +41,22 @@ Token is obtained after login via `POST /api/v1/auth/login`.
 | GET    | `/api/v1/galleries?category=kegiatan` | Filter galleries by category |
 | GET    | `/api/v1/galleries/:id`               | Get gallery by ID            |
 
-### Protected (Bearer Token required)
+### Protected (admin JWT required)
 
-| Method | Endpoint                      | Description        |
-| ------ | ----------------------------- | ------------------ |
-| GET    | `/api/v1/admin/events`        | Get all events     |
-| GET    | `/api/v1/admin/events/:id`    | Get event by ID    |
-| POST   | `/api/v1/admin/events`        | Create new event   |
-| PUT    | `/api/v1/admin/events/:id`    | Update event       |
-| DELETE | `/api/v1/admin/events/:id`    | Delete event       |
-| GET    | `/api/v1/admin/galleries`     | Get all galleries  |
-| GET    | `/api/v1/admin/galleries/:id` | Get gallery by ID  |
-| POST   | `/api/v1/admin/galleries`     | Create new gallery |
-| PUT    | `/api/v1/admin/galleries/:id` | Update gallery     |
-| DELETE | `/api/v1/admin/galleries/:id` | Delete gallery     |
-| POST   | `/api/v1/admin/upload`        | Upload image       |
+| Method | Endpoint                      | Description          |
+| ------ | ----------------------------- | -------------------- |
+| POST   | `/api/v1/admin/users`         | Create another admin |
+| GET    | `/api/v1/admin/events`        | Get all events       |
+| GET    | `/api/v1/admin/events/:id`    | Get event by ID      |
+| POST   | `/api/v1/admin/events`        | Create new event     |
+| PUT    | `/api/v1/admin/events/:id`    | Update event         |
+| DELETE | `/api/v1/admin/events/:id`    | Delete event         |
+| GET    | `/api/v1/admin/galleries`     | Get all galleries    |
+| GET    | `/api/v1/admin/galleries/:id` | Get gallery by ID    |
+| POST   | `/api/v1/admin/galleries`     | Create new gallery   |
+| PUT    | `/api/v1/admin/galleries/:id` | Update gallery       |
+| DELETE | `/api/v1/admin/galleries/:id` | Delete gallery       |
+| POST   | `/api/v1/admin/upload`        | Upload image         |
 
 ## Gallery Categories
 
@@ -102,6 +102,8 @@ Token is obtained after login via `POST /api/v1/auth/login`.
 | 201  | Created               |
 | 400  | Bad Request           |
 | 401  | Unauthorized          |
+| 403  | Forbidden             |
+| 409  | Conflict              |
 | 404  | Not Found             |
 | 500  | Internal Server Error |
 
@@ -118,9 +120,18 @@ cp .env.example .env
 # Start database
 docker compose up -d
 
+# Set ADMIN_NAME, ADMIN_EMAIL, and ADMIN_PASSWORD in .env,
+# then create the first administrator (fails if the email already exists)
+go run ./cmd/admin-seed
+
 # Run server
 air
 ```
+
+Public registration is disabled. The seed command is only for creating the
+first administrator. After that, an authenticated administrator can create
+additional administrators through `POST /api/v1/admin/users`. All `/api/v1/admin`
+routes require both a valid JWT and the `admin` role.
 
 ## API Documentation
 
