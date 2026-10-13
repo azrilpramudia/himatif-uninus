@@ -10,6 +10,9 @@ if (apiUrl && !["http:", "https:"].includes(apiUrl.protocol)) {
 
 const nextConfig: NextConfig = {
   images: {
+    dangerouslyAllowLocalIP:
+      process.env.NODE_ENV === "development" &&
+      ["localhost", "127.0.0.1", "[::1]"].includes(apiUrl?.hostname ?? ""),
     remotePatterns: apiUrl
       ? [
           {

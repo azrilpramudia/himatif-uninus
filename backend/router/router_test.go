@@ -3,6 +3,8 @@ package router
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -84,6 +86,31 @@ func TestRegistrationIsNotPublicAndRequiresAdminRole(t *testing.T) {
 				t.Fatalf("status = %d, want %d; body: %s", response.Code, test.wantStatus, response.Body.String())
 			}
 		})
+	}
+}
+
+func TestUploadedImagesAreServedFromConfiguredDirectory(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	uploadDir := t.TempDir()
+	galleryDir := filepath.Join(uploadDir, "gallery")
+	if err := os.MkdirAll(galleryDir, 0o755); err != nil {
+		t.Fatalf("create gallery directory: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(galleryDir, "image.png"), []byte("image"), 0o644); err != nil {
+		t.Fatalf("write test image: %v", err)
+	}
+	t.Setenv("UPLOAD_DIR", uploadDir)
+
+	router := SetupRouter(&Handlers{})
+	request := httptest.NewRequest(http.MethodGet, "/uploads/gallery/image.png", nil)
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d; body: %s", response.Code, http.StatusOK, response.Body.String())
+	}
+	if response.Body.String() != "image" {
+		t.Fatalf("body = %q, want %q", response.Body.String(), "image")
 	}
 }
 

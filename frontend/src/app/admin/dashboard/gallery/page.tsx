@@ -173,10 +173,15 @@ export default function GalleryDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingID, setDeletingID] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<GalleryCategory | "all">(
+    "all",
+  );
 
   const loadContent = useCallback(async () => {
     setLoading(true);
@@ -201,12 +206,31 @@ export default function GalleryDashboardPage() {
     void loadContent();
   }, [loadContent]);
 
+  const filteredGalleries = galleries.filter((gallery) => {
+    const query = searchQuery.trim().toLocaleLowerCase("id");
+    const linkedEvent =
+      gallery.event?.title ??
+      events.find((event) => event.id === gallery.event_id)?.title ??
+      "";
+    const matchesQuery =
+      !query ||
+      [gallery.title, linkedEvent, categoryLabels[gallery.category]]
+        .join(" ")
+        .toLocaleLowerCase("id")
+        .includes(query);
+    return (
+      matchesQuery &&
+      (categoryFilter === "all" || gallery.category === categoryFilter)
+    );
+  });
+
   async function saveGallery(
     values: { title: string; category: GalleryCategory; event_id: string },
     image: File | null,
   ) {
     setSaving(true);
     setActionError(null);
+    setActionMessage(null);
     try {
       let imageURL = editingGallery?.image_url ?? "";
       if (image) {
@@ -237,6 +261,11 @@ export default function GalleryDashboardPage() {
 
       setShowForm(false);
       setEditingGallery(null);
+      setActionMessage(
+        editingGallery
+          ? "Perubahan foto berhasil disimpan."
+          : "Foto berhasil ditambahkan ke galeri.",
+      );
       await loadContent();
     } catch (error) {
       const message =
@@ -253,10 +282,12 @@ export default function GalleryDashboardPage() {
 
     setDeletingID(gallery.id);
     setActionError(null);
+    setActionMessage(null);
     try {
       await fetchAPI(`/api/admin/galleries/${gallery.id}`, {
         method: "DELETE",
       });
+      setActionMessage("Foto berhasil dihapus dari galeri.");
       await loadContent();
     } catch (error) {
       setActionError(
@@ -290,7 +321,7 @@ export default function GalleryDashboardPage() {
             setEditingGallery(null);
             setShowForm(true);
           }}
-          className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white"
+          className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           + Tambah foto
         </button>
@@ -301,13 +332,28 @@ export default function GalleryDashboardPage() {
           {actionError}
         </p>
       )}
+      {actionMessage && (
+        <p
+          role="status"
+          className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:text-emerald-300"
+        >
+          {actionMessage}
+        </p>
+      )}
 
       {loading ? (
         <section
-          className="rounded-xl border border-primary/10 p-6 text-sm"
-          style={{ backgroundColor: "var(--bg-card)", color: "var(--text-muted)" }}
+          aria-label="Memuat galeri"
+          className="grid gap-4 rounded-xl border border-primary/10 p-4 sm:grid-cols-2 xl:grid-cols-3"
+          style={{ backgroundColor: "var(--bg-card)" }}
         >
-          Memuat galeri...
+          {[1, 2, 3].map((item) => (
+            <div key={item} className="space-y-3">
+              <div className="h-52 animate-pulse rounded-lg bg-primary/5" />
+              <div className="h-4 w-2/3 animate-pulse rounded bg-primary/5" />
+              <div className="h-3 w-1/2 animate-pulse rounded bg-primary/5" />
+            </div>
+          ))}
         </section>
       ) : loadError ? (
         <section
@@ -338,11 +384,80 @@ export default function GalleryDashboardPage() {
           </p>
         </section>
       ) : (
+        <>
+          <section
+            className="mb-4 flex flex-col gap-3 rounded-xl border border-primary/10 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-5"
+            style={{ backgroundColor: "var(--bg-card)" }}
+          >
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+              Menampilkan{" "}
+              <span className="font-semibold" style={{ color: "var(--text-body)" }}>
+                {filteredGalleries.length}
+              </span>{" "}
+              dari {galleries.length} foto
+            </p>
+            <div className="grid gap-2 sm:flex">
+              <label className="sr-only" htmlFor="gallery-search">
+                Cari foto galeri
+              </label>
+              <input
+                id="gallery-search"
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Cari judul atau kegiatan..."
+                className="h-10 w-full rounded-lg border border-primary/15 bg-transparent px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15 sm:w-64"
+              />
+              <label className="sr-only" htmlFor="gallery-category-filter">
+                Filter kategori galeri
+              </label>
+              <select
+                id="gallery-category-filter"
+                value={categoryFilter}
+                onChange={(event) =>
+                  setCategoryFilter(
+                    event.target.value as GalleryCategory | "all",
+                  )
+                }
+                className="h-10 rounded-lg border border-primary/15 bg-transparent px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+              >
+                <option value="all">Semua kategori</option>
+                {Object.entries(categoryLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </section>
+          {filteredGalleries.length === 0 ? (
+            <section
+              className="rounded-xl border border-dashed border-primary/20 p-12 text-center"
+              style={{ backgroundColor: "var(--bg-card)" }}
+            >
+              <p className="font-semibold" style={{ color: "var(--text-body)" }}>
+                Tidak ada foto yang cocok
+              </p>
+              <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+                Coba ubah kata kunci atau kategori.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setCategoryFilter("all");
+                }}
+                className="mt-4 rounded-lg border border-primary/20 px-3 py-2 text-sm font-semibold text-primary transition hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                Hapus filter
+              </button>
+            </section>
+          ) : (
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {galleries.map((gallery) => (
+          {filteredGalleries.map((gallery) => (
             <article
               key={gallery.id}
-              className="overflow-hidden rounded-xl border border-primary/10 shadow-sm"
+              className="overflow-hidden rounded-xl border border-primary/10 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg"
               style={{ backgroundColor: "var(--bg-card)" }}
             >
               <img
@@ -375,7 +490,7 @@ export default function GalleryDashboardPage() {
                       setEditingGallery(gallery);
                       setShowForm(true);
                     }}
-                    className="flex-1 rounded-lg border border-primary/20 px-3 py-2 text-xs font-semibold text-primary"
+                    className="flex-1 rounded-lg border border-primary/20 px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   >
                     Edit
                   </button>
@@ -383,7 +498,7 @@ export default function GalleryDashboardPage() {
                     type="button"
                     disabled={deletingID === gallery.id}
                     onClick={() => void deleteGallery(gallery)}
-                    className="flex-1 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-600 disabled:opacity-50"
+                    className="flex-1 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-50"
                   >
                     {deletingID === gallery.id ? "Menghapus..." : "Hapus"}
                   </button>
@@ -392,6 +507,8 @@ export default function GalleryDashboardPage() {
             </article>
           ))}
         </section>
+          )}
+        </>
       )}
 
       {showForm && (

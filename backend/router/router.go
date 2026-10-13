@@ -1,6 +1,8 @@
 package router
 
 import (
+	"os"
+
 	"github.com/azrilpramudia/himatif-uninus/internal/handler"
 	"github.com/azrilpramudia/himatif-uninus/internal/middleware"
 	"github.com/gin-gonic/gin"
@@ -16,6 +18,12 @@ func SetupRouter(h *Handlers) *gin.Engine {
 	r := gin.Default()
 
 	r.Use(middleware.CORSMiddleware())
+
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	if uploadDir == "" {
+		uploadDir = "./uploads"
+	}
+	r.Static("/uploads", uploadDir)
 
 	// Health Check
 	r.GET("/health", func(c *gin.Context) {

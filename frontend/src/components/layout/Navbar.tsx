@@ -47,7 +47,7 @@ export default function Navbar() {
               width={40}
               height={40}
               loading="eager"
-              className="object-contain"
+              className="h-10 w-10 object-contain"
             />
             <div className="flex flex-col leading-none">
               <span className="text-white font-semibold text-base tracking-wide">

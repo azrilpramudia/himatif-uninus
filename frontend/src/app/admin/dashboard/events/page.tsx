@@ -98,7 +98,7 @@ function EventForm({ event, saving, onCancel, onSave }: EventFormProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="event-form-title"
-        className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-primary/10 shadow-xl sm:max-h-[calc(100dvh-2rem)]"
+        className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-primary/10 shadow-xl sm:max-h-[calc(100dvh-2rem)]"
         style={{ backgroundColor: "var(--bg-card)" }}
       >
         <div className="shrink-0 border-b border-primary/10 px-5 py-4 sm:px-6">
@@ -181,24 +181,24 @@ function EventForm({ event, saving, onCancel, onSave }: EventFormProps) {
             </label>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-medium">
               <span>Deskripsi singkat</span>
               <textarea
-                rows={3}
+                rows={5}
                 value={values.description}
                 onChange={(event) => update("description", event.target.value)}
-                className="mt-1 w-full rounded-lg border border-primary/15 bg-transparent px-3 py-2"
+                className="mt-1 min-h-36 w-full rounded-lg border border-primary/15 bg-transparent px-3 py-2"
               />
             </label>
 
             <label className="block text-sm font-medium">
               <span>Konten lengkap</span>
               <textarea
-                rows={3}
+                rows={5}
                 value={values.content}
                 onChange={(event) => update("content", event.target.value)}
-                className="mt-1 w-full rounded-lg border border-primary/15 bg-transparent px-3 py-2"
+                className="mt-1 min-h-36 w-full rounded-lg border border-primary/15 bg-transparent px-3 py-2"
               />
             </label>
           </div>
@@ -259,10 +259,13 @@ export default function EventsDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingID, setDeletingID] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<EventStatus | "all">("all");
 
   const loadEvents = useCallback(async () => {
     setLoading(true);
@@ -283,9 +286,21 @@ export default function EventsDashboardPage() {
     void loadEvents();
   }, [loadEvents]);
 
+  const filteredEvents = events.filter((event) => {
+    const query = searchQuery.trim().toLocaleLowerCase("id");
+    const matchesQuery =
+      !query ||
+      [event.title, event.location, event.description]
+        .join(" ")
+        .toLocaleLowerCase("id")
+        .includes(query);
+    return matchesQuery && (statusFilter === "all" || event.status === statusFilter);
+  });
+
   async function saveEvent(values: EventFormValues, thumbnail: File | null) {
     setSaving(true);
     setActionError(null);
+    setActionMessage(null);
     try {
       let thumbnailURL = editingEvent?.thumbnail ?? "";
       if (thumbnail) {
@@ -318,6 +333,11 @@ export default function EventsDashboardPage() {
 
       setShowForm(false);
       setEditingEvent(null);
+      setActionMessage(
+        editingEvent
+          ? "Perubahan kegiatan berhasil disimpan."
+          : "Kegiatan berhasil ditambahkan.",
+      );
       await loadEvents();
     } catch (error) {
       const message =
@@ -340,8 +360,10 @@ export default function EventsDashboardPage() {
 
     setDeletingID(event.id);
     setActionError(null);
+    setActionMessage(null);
     try {
       await fetchAPI(`/api/admin/events/${event.id}`, { method: "DELETE" });
+      setActionMessage("Kegiatan berhasil dihapus.");
       await loadEvents();
     } catch (error) {
       setActionError(
@@ -375,7 +397,7 @@ export default function EventsDashboardPage() {
             setEditingEvent(null);
             setShowForm(true);
           }}
-          className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white"
+          className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           + Tambah kegiatan
         </button>
@@ -386,15 +408,70 @@ export default function EventsDashboardPage() {
           {actionError}
         </p>
       )}
+      {actionMessage && (
+        <p
+          role="status"
+          className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:text-emerald-300"
+        >
+          {actionMessage}
+        </p>
+      )}
 
       <section
         className="overflow-hidden rounded-xl border border-primary/10 shadow-sm"
         style={{ backgroundColor: "var(--bg-card)" }}
       >
+        {events.length > 0 && (
+          <div className="flex flex-col gap-3 border-b border-primary/10 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+              Menampilkan{" "}
+              <span className="font-semibold" style={{ color: "var(--text-body)" }}>
+                {filteredEvents.length}
+              </span>{" "}
+              dari {events.length} kegiatan
+            </p>
+            <div className="grid gap-2 sm:flex">
+              <label className="sr-only" htmlFor="event-search">
+                Cari kegiatan
+              </label>
+              <input
+                id="event-search"
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Cari nama, lokasi..."
+                className="h-10 w-full rounded-lg border border-primary/15 bg-transparent px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15 sm:w-64"
+              />
+              <label className="sr-only" htmlFor="event-status-filter">
+                Filter status kegiatan
+              </label>
+              <select
+                id="event-status-filter"
+                value={statusFilter}
+                onChange={(event) =>
+                  setStatusFilter(event.target.value as EventStatus | "all")
+                }
+                className="h-10 rounded-lg border border-primary/15 bg-transparent px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+              >
+                <option value="all">Semua status</option>
+                {Object.entries(statusLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
         {loading ? (
-          <p className="p-6 text-sm" style={{ color: "var(--text-muted)" }}>
-            Memuat kegiatan...
-          </p>
+          <div className="space-y-3 p-5" aria-label="Memuat kegiatan">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-24 animate-pulse rounded-xl bg-primary/5"
+              />
+            ))}
+          </div>
         ) : loadError ? (
           <div className="p-6">
             <p role="alert" className="text-sm text-red-600 dark:text-red-400">
@@ -417,9 +494,28 @@ export default function EventsDashboardPage() {
               Tambahkan kegiatan pertama untuk ditampilkan di website.
             </p>
           </div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="p-12 text-center">
+            <p className="font-semibold" style={{ color: "var(--text-body)" }}>
+              Tidak ada kegiatan yang cocok
+            </p>
+            <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+              Coba ubah kata kunci atau filter status.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery("");
+                setStatusFilter("all");
+              }}
+              className="mt-4 rounded-lg border border-primary/20 px-3 py-2 text-sm font-semibold text-primary transition hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              Hapus filter
+            </button>
+          </div>
         ) : (
           <div className="divide-y divide-primary/10">
-            {events.map((event) => (
+            {filteredEvents.map((event) => (
               <article
                 key={event.id}
                 className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-5"
@@ -462,7 +558,7 @@ export default function EventsDashboardPage() {
                       setEditingEvent(event);
                       setShowForm(true);
                     }}
-                    className="rounded-lg border border-primary/20 px-3 py-2 text-xs font-semibold text-primary"
+                    className="rounded-lg border border-primary/20 px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   >
                     Edit
                   </button>
@@ -470,7 +566,7 @@ export default function EventsDashboardPage() {
                     type="button"
                     disabled={deletingID === event.id}
                     onClick={() => void deleteEvent(event)}
-                    className="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-600 disabled:opacity-50"
+                    className="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-50"
                   >
                     {deletingID === event.id ? "Menghapus..." : "Hapus"}
                   </button>
