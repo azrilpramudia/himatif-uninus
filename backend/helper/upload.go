@@ -3,6 +3,7 @@ package helper
 import (
 	"errors"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -33,7 +34,7 @@ func UploadImage(file *multipart.FileHeader, subFolder string) (string, error) {
 
 	uploadDir := filepath.Join(os.Getenv("UPLOAD_DIR"), subFolder)
 	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-		return "", errors.New("failed to create upload directory")
+		return "", fmt.Errorf("failed to create upload directory: %w", err)
 	}
 
 	// Generate nama file unik
@@ -49,26 +50,23 @@ func UploadImage(file *multipart.FileHeader, subFolder string) (string, error) {
 	// Buka file
 	src, err := file.Open()
 	if err != nil {
-		return "", errors.New("failed to open file")
+		return "", fmt.Errorf("failed to open uploaded file: %w", err)
 	}
 	defer src.Close()
 
 	// Tulis ke disk
 	dst, err := os.Create(filePath)
 	if err != nil {
-		return "", errors.New("failed to save file")
+		return "", fmt.Errorf("failed to create uploaded file: %w", err)
 	}
-	defer dst.Close()
-
-	buf := make([]byte, 32*1024)
-	for {
-		n, err := src.Read(buf)
-		if n > 0 {
-			dst.Write(buf[:n])
-		}
-		if err != nil {
-			break
-		}
+	if _, err := io.Copy(dst, src); err != nil {
+		_ = dst.Close()
+		_ = os.Remove(filePath)
+		return "", fmt.Errorf("failed to write uploaded file: %w", err)
+	}
+	if err := dst.Close(); err != nil {
+		_ = os.Remove(filePath)
+		return "", fmt.Errorf("failed to close uploaded file: %w", err)
 	}
 
 	// Return URL path yang bisa diakses frontend

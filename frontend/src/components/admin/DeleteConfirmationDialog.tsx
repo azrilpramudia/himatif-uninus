@@ -90,6 +90,7 @@ export default function DeleteConfirmationDialog({
             type="button"
             onClick={onCancel}
             disabled={deleting}
+            data-modal-initial-focus
             className="rounded-lg border border-primary/20 px-4 py-2.5 text-sm font-medium transition hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
           >
             Batal

@@ -27,15 +27,22 @@ export async function fetchAPI<T>(
     requestBody = typeof body === "string" ? body : JSON.stringify(body);
   }
 
-  const res = await fetch(
-    isAdminRequest ? endpoint : `${BASE_URL}${endpoint}`,
-    {
+  let res: Response;
+  try {
+    res = await fetch(isAdminRequest ? endpoint : `${BASE_URL}${endpoint}`, {
       method,
       headers,
       body: requestBody,
       cache: "no-store",
-    },
-  );
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        "Tidak dapat terhubung ke server. Periksa koneksi dan pastikan layanan sedang berjalan.",
+      );
+    }
+    throw error;
+  }
 
   if (!res.ok) {
     const error: unknown = await res.json().catch(() => null);

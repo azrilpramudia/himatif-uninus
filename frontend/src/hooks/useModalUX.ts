@@ -16,11 +16,17 @@ export function useModalUX(onClose: () => void, disabled: boolean) {
 
   useEffect(() => {
     const previouslyFocused = document.activeElement;
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const initialFocusFrame = window.requestAnimationFrame(() => {
-      const firstField = dialogRef.current?.querySelector<HTMLElement>(
-        "input, select, textarea",
-      );
-      (firstField ?? dialogRef.current)?.focus();
+      const initialTarget =
+        dialogRef.current?.querySelector<HTMLElement>(
+          "[data-modal-initial-focus]",
+        ) ??
+        dialogRef.current?.querySelector<HTMLElement>(
+          "input:not([type='file']), select, textarea, button:not([disabled])",
+        );
+      (initialTarget ?? dialogRef.current)?.focus();
     });
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -57,6 +63,7 @@ export function useModalUX(onClose: () => void, disabled: boolean) {
     return () => {
       window.cancelAnimationFrame(initialFocusFrame);
       document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousBodyOverflow;
       if (
         previouslyFocused instanceof HTMLElement &&
         previouslyFocused.isConnected
