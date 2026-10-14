@@ -4,7 +4,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeUpContainer, fadeUpItem } from "@/lib/animations";
 import { activities } from "@/constants/activities";
-import type { Activity } from "@/types/activity";
 
 // ===== Badge =====
 function SectionBadge() {

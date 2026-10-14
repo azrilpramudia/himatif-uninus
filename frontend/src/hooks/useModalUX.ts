@@ -8,6 +8,12 @@ const focusableSelector =
 
 export function useModalUX(onClose: () => void, disabled: boolean) {
   const dialogRef = useRef<HTMLElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(
+    typeof document !== "undefined" &&
+      document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null,
+  );
   const onCloseRef = useRef(onClose);
   const disabledRef = useRef(disabled);
 
@@ -15,7 +21,7 @@ export function useModalUX(onClose: () => void, disabled: boolean) {
   disabledRef.current = disabled;
 
   useEffect(() => {
-    const previouslyFocused = document.activeElement;
+    const previouslyFocused = previouslyFocusedRef.current;
     const previousBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const initialFocusFrame = window.requestAnimationFrame(() => {
@@ -64,10 +70,7 @@ export function useModalUX(onClose: () => void, disabled: boolean) {
       window.cancelAnimationFrame(initialFocusFrame);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousBodyOverflow;
-      if (
-        previouslyFocused instanceof HTMLElement &&
-        previouslyFocused.isConnected
-      ) {
+      if (previouslyFocused?.isConnected) {
         previouslyFocused.focus();
       }
     };
