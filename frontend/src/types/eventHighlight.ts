@@ -7,4 +7,9 @@ export type EventHighlight = {
   date: string;
   thumbnail: string;
   slug: string;
+  description: string;
+  content: string;
+  location: string;
+  startDate: string;
+  endDate: string;
 };

@@ -132,7 +132,11 @@ export default function EventDetailPage() {
           {event.thumbnail && (
             <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-10">
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}${event.thumbnail}`}
+                src={
+                  event.thumbnail.startsWith("/images/")
+                    ? event.thumbnail
+                    : `${process.env.NEXT_PUBLIC_API_URL}${event.thumbnail}`
+                }
                 alt={event.title}
                 fill
                 className="object-cover"
