@@ -1,145 +1,200 @@
-# Himatif Uninus API Documentation
+# HIMATIF UNINUS API
 
-REST API for the website of the Informatics Engineering Student Association of Universitas Islam Nusantara.
-
-## Tech Stack
-
-- **Language** : Golang
-- **Framework** : Gin
-- **ORM** : GORM
-- **Database** : PostgreSQL (Docker)
-- **Auth** : JWT
+REST API for the HIMATIF UNINUS website, the Informatics Engineering Student
+Association of Universitas Islam Nusantara. The API is built with Go, Gin,
+GORM, PostgreSQL, and JWT authentication.
 
 ## Base URL
 
-| Environment | URL                              |
-| ----------- | -------------------------------- |
-| Development | `http://localhost:3000`          |
-| Production  | `https://api.himatif-uninus.org` |
+| Environment | Base URL |
+| --- | --- |
+| Local development | `http://localhost:3000` |
+| Production | Configure this URL for your deployment. No production API hostname is currently configured in this repository. |
+
+All API routes are relative to the base URL. The server also serves uploaded
+files under `/uploads/` and interactive documentation at `/docs/swagger.html`.
 
 ## Authentication
 
-This API uses **JWT Bearer Token** for protected endpoints.
+The login endpoint issues a JWT for an administrator account:
 
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "your-password"
+}
 ```
+
+Use the returned token for protected routes:
+
+```http
 Authorization: Bearer <token>
 ```
 
-Token is obtained after login via `POST /api/v1/auth/login`.
+Admin routes require a valid JWT signed using `HS256` and the `admin` role.
+Tokens are currently valid for 24 hours. Public registration is disabled:
+create the first administrator with the seed command, then use the protected
+`POST /api/v1/admin/users` endpoint to add other administrators.
 
 ## Endpoints
 
-### Public (No token required)
+### Health and authentication
 
-| Method | Endpoint                              | Description                  |
-| ------ | ------------------------------------- | ---------------------------- |
-| GET    | `/health`                             | Health check                 |
-| POST   | `/api/v1/auth/login`                  | Login admin                  |
-| GET    | `/api/v1/events`                      | Get all events               |
-| GET    | `/api/v1/events/:slug`                | Get event by slug            |
-| GET    | `/api/v1/galleries`                   | Get all galleries            |
-| GET    | `/api/v1/galleries?category=kegiatan` | Filter galleries by category |
-| GET    | `/api/v1/galleries/:id`               | Get gallery by ID            |
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| `GET` | `/health` | Public | Check API availability. |
+| `POST` | `/api/v1/auth/login` | Public | Authenticate an administrator and receive a JWT. |
+| `POST` | `/api/v1/admin/users` | Admin | Create another administrator. |
 
-### Protected (admin JWT required)
+### Events
 
-| Method | Endpoint                      | Description          |
-| ------ | ----------------------------- | -------------------- |
-| POST   | `/api/v1/admin/users`         | Create another admin |
-| GET    | `/api/v1/admin/events`        | Get all events       |
-| GET    | `/api/v1/admin/events/:id`    | Get event by ID      |
-| POST   | `/api/v1/admin/events`        | Create new event     |
-| PUT    | `/api/v1/admin/events/:id`    | Update event         |
-| DELETE | `/api/v1/admin/events/:id`    | Delete event         |
-| GET    | `/api/v1/admin/galleries`     | Get all galleries    |
-| GET    | `/api/v1/admin/galleries/:id` | Get gallery by ID    |
-| POST   | `/api/v1/admin/galleries`     | Create new gallery   |
-| PUT    | `/api/v1/admin/galleries/:id` | Update gallery       |
-| DELETE | `/api/v1/admin/galleries/:id` | Delete gallery       |
-| POST   | `/api/v1/admin/upload`        | Upload image         |
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/events` | Public | List events. |
+| `GET` | `/api/v1/events/{slug}` | Public | Get an event by its slug. |
+| `GET` | `/api/v1/admin/events` | Admin | List events for administration. |
+| `GET` | `/api/v1/admin/events/{id}` | Admin | Get an event by UUID. |
+| `POST` | `/api/v1/admin/events` | Admin | Create an event. |
+| `PUT` | `/api/v1/admin/events/{id}` | Admin | Update an event. |
+| `DELETE` | `/api/v1/admin/events/{id}` | Admin | Delete an event and its related gallery records. |
 
-## Gallery Categories
+Event status values are `upcoming`, `ongoing`, and `completed`. Creation
+requires `title`, `start_date`, and `end_date`; dates must be RFC 3339
+date-time values, and the end date cannot precede the start date.
 
-| Value        | Description             |
-| ------------ | ----------------------- |
-| `kegiatan`   | Activity / event photos |
-| `prestasi`   | Achievement photos      |
-| `organisasi` | Organization photos     |
-| `lainnya`    | Others                  |
+### Galleries
 
-## Event Status
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/galleries` | Public | List gallery items. |
+| `GET` | `/api/v1/galleries?category=kegiatan` | Public | Filter gallery items by category. |
+| `GET` | `/api/v1/galleries/{id}` | Public | Get a gallery item by UUID. |
+| `GET` | `/api/v1/admin/galleries` | Admin | List gallery items for administration. |
+| `GET` | `/api/v1/admin/galleries/{id}` | Admin | Get a gallery item by UUID. |
+| `POST` | `/api/v1/admin/galleries` | Admin | Create a gallery item. |
+| `PUT` | `/api/v1/admin/galleries/{id}` | Admin | Update a gallery item. |
+| `DELETE` | `/api/v1/admin/galleries/{id}` | Admin | Delete a gallery record. |
 
-| Value       | Description       |
-| ----------- | ----------------- |
-| `upcoming`  | Upcoming event    |
-| `ongoing`   | Currently ongoing |
-| `completed` | Finished          |
+Gallery categories are `kegiatan`, `prestasi`, `organisasi`, and `lainnya`.
+Creating a gallery item requires `title` and `image_url`. The optional
+`event_id` must be a UUID. Deleting a gallery record does not currently delete
+its image file.
 
-## Response Format
+### Image upload
 
-### Success
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| `POST` | `/api/v1/admin/upload` | Admin | Upload a JPG, JPEG, PNG, or WEBP image. |
+| `GET` | `/uploads/gallery/{filename}` | Public | Retrieve an uploaded image. |
+
+Send the upload as `multipart/form-data` using the `image` field. The maximum
+file size is 5 MiB. The upload endpoint stores files in the `gallery` upload
+directory and returns a path such as `/uploads/gallery/<filename>.png`. Use
+that returned path as `image_url` or as an event thumbnail.
+
+## Request and response conventions
+
+JSON endpoints accept `Content-Type: application/json`. Successful resource
+responses use a `data` property, usually alongside a `message`; errors use an
+`error` property.
+
+Example success response:
 
 ```json
 {
-  "message": "success message",
-  "data": {}
+  "message": "event created successfully",
+  "data": {
+    "id": "d0085599-401d-4a21-aafa-160f0181c484",
+    "title": "Informatics Coding Camp",
+    "slug": "informatics-coding-camp-abc12345"
+  }
 }
 ```
 
-### Error
+Example error response:
 
 ```json
 {
-  "error": "error message"
+  "error": "event not found"
 }
 ```
 
-## Error Codes
+Common status codes include `200` (success), `201` (created), `400` (invalid
+input or operation failed), `401` (missing/invalid credentials), `403`
+(insufficient role), `404` (resource not found on read routes), `409` (email
+already registered), and `500` (server or configuration error). Some update
+and delete handlers currently return `400` when an operation fails, including
+when a resource does not exist; see the OpenAPI response definitions.
 
-| Code | Description           |
-| ---- | --------------------- |
-| 200  | OK                    |
-| 201  | Created               |
-| 400  | Bad Request           |
-| 401  | Unauthorized          |
-| 403  | Forbidden             |
-| 409  | Conflict              |
-| 404  | Not Found             |
-| 500  | Internal Server Error |
+## Local development
 
-## Development Setup
+From the repository's `backend` directory:
 
 ```bash
-# Clone repo
-git clone https://github.com/azrilpramudia/himatif-uninus.git
-cd himatif-uninus/backend
-
-# Setup environment
 cp .env.example .env
-
-# Start database
-docker compose up -d
-
-# Set ADMIN_NAME, ADMIN_EMAIL, and ADMIN_PASSWORD in .env,
-# then create the first administrator (fails if the email already exists)
-go run ./cmd/admin-seed
-
-# Run server
-air
 ```
 
-Public registration is disabled. The seed command is only for creating the
-first administrator. After that, an authenticated administrator can create
-additional administrators through `POST /api/v1/admin/users`. All `/api/v1/admin`
-routes require both a valid JWT and the `admin` role.
+Set the database credentials and a strong `JWT_SECRET` in `.env`. Start the
+PostgreSQL service with Docker Compose:
 
-## API Documentation
+```bash
+docker compose up -d
+```
 
-Interactive API documentation is available via Swagger UI, served directly from the API server.
+Configure `ADMIN_NAME`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD`, then create the
+first administrator:
 
-| Environment | URL                                                |
-| ----------- | -------------------------------------------------- |
-| Development | `http://localhost:3000/docs/swagger.html`          |
-| Production  | `https://api.himatif-uninus.org/docs/swagger.html` |
+```bash
+go run ./cmd/admin-seed
+```
 
-Alternatively, open `openapi.yaml` in [Swagger Editor](https://editor.swagger.io) for a web-based view.
+Start the API:
+
+```bash
+go run ./cmd/api
+```
+
+The default API port is `3000`. If using the frontend development server,
+configure `ALLOWED_ORIGIN=http://localhost:3001` in the backend environment.
+`UPLOAD_DIR` defaults to `./uploads`.
+
+The seed command fails if the configured admin email already exists. Do not
+use production credentials or a production database for local development.
+
+## Environment variables
+
+| Variable | Purpose | Notes |
+| --- | --- | --- |
+| `APP_PORT` | API listen port. | Defaults to `3000`. |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_SSLMODE` | PostgreSQL connection settings. | `docker-compose.yml` maps the container port to `DB_PORT`. |
+| `JWT_SECRET` | Secret used to sign and verify JWTs. | Required; use a strong, private value. |
+| `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` | First admin account for the seed command. | Required only when running `go run ./cmd/admin-seed`. |
+| `ALLOWED_ORIGIN` | Allowed browser origin for CORS. | Defaults in code to `http://localhost:5000`; set it to the actual frontend origin, such as `http://localhost:3001`. |
+| `UPLOAD_DIR` | Filesystem directory for uploaded images. | Defaults to `./uploads`. |
+
+`JWT_EXPIRED_HOUR` and `MAX_FILE_SIZE` are present in `.env.example` but are
+not currently read by the implementation. Token lifetime is fixed at 24 hours
+and the upload limit is fixed at 5 MiB.
+
+## Tests
+
+Run all backend tests from the `backend` directory:
+
+```bash
+go test ./...
+go vet ./...
+```
+
+The API integration tests exercise routing, middleware, handlers, services,
+and file uploads with in-memory repositories and temporary upload directories.
+They do not connect to PostgreSQL or validate GORM queries and migrations.
+
+## Interactive API reference
+
+When the API is running locally, open
+[http://localhost:3000/docs/swagger.html](http://localhost:3000/docs/swagger.html).
+The OpenAPI definition is in [`openapi.yaml`](./openapi.yaml) and can also be
+opened in [Swagger Editor](https://editor.swagger.io).

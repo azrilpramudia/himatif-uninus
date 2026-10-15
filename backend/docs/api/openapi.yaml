@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Himatif Uninus API
-  description: REST API untuk website Himpunan Mahasiswa Teknik Informatika Universitas Islam Nusantara
+  description: REST API for the HIMATIF UNINUS website
   version: 1.0.0
   contact:
     name: Himatif Uninus
@@ -9,23 +9,21 @@ info:
 
 servers:
   - url: http://localhost:3000
-    description: Development Server
-  # - url: https://api.himatif-uninus.org
-  #   description: Production Server
+    description: Local development server
 
 tags:
   - name: Auth
-    description: Autentikasi admin
+    description: Administrator authentication
   - name: Events
-    description: Manajemen kegiatan (public)
+    description: Public event reads
   - name: Galleries
-    description: Manajemen galeri (public)
+    description: Public gallery reads
   - name: Admin Events
-    description: Manajemen kegiatan (protected)
+    description: Protected event management
   - name: Admin Galleries
-    description: Manajemen galeri (protected)
+    description: Protected gallery management
   - name: Upload
-    description: Upload file gambar
+    description: Protected image upload
 
 components:
   securitySchemes:
@@ -35,7 +33,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    # ===== Auth =====
+    # Authentication
     LoginInput:
       type: object
       required: [email, password]
@@ -43,11 +41,11 @@ components:
         email:
           type: string
           format: email
-          example: admin@himatif.com
+          example: admin@example.com
         password:
           type: string
           minLength: 6
-          example: password123
+          example: change-me
 
     RegisterInput:
       type: object
@@ -59,11 +57,11 @@ components:
         email:
           type: string
           format: email
-          example: admin@himatif.com
+          example: admin@example.com
         password:
           type: string
           minLength: 6
-          example: password123
+          example: change-me
 
     AuthResponse:
       type: object
@@ -75,7 +73,7 @@ components:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
-    # ===== Event =====
+    # Events
     Event:
       type: object
       properties:
@@ -91,16 +89,17 @@ components:
           example: informatika-coding-camp-2024-abc12345
         description:
           type: string
-          example: Kegiatan pelatihan coding intensif
+          example: Intensive coding training program
         content:
           type: string
-          example: Detail lengkap kegiatan ICC 2024
+          example: Full details for the ICC 2024 event
         thumbnail:
           type: string
-          example: /uploads/events/thumbnail.jpg
+          description: Path returned by the upload endpoint.
+          example: /uploads/gallery/1234567890_abc12345.jpg
         location:
           type: string
-          example: Aula UNINUS Bandung
+          example: UNINUS Hall, Bandung
         status:
           type: string
           enum: [upcoming, ongoing, completed]
@@ -129,16 +128,17 @@ components:
           example: Informatika Coding Camp 2024
         description:
           type: string
-          example: Kegiatan pelatihan coding intensif
+          example: Intensive coding training program
         content:
           type: string
-          example: Detail lengkap kegiatan ICC 2024
+          example: Full details for the ICC 2024 event
         thumbnail:
           type: string
-          example: /uploads/events/thumbnail.jpg
+          description: Path returned by the upload endpoint.
+          example: /uploads/gallery/1234567890_abc12345.jpg
         location:
           type: string
-          example: Aula UNINUS Bandung
+          example: UNINUS Hall, Bandung
         status:
           type: string
           enum: [upcoming, ongoing, completed]
@@ -178,17 +178,17 @@ components:
           type: string
           format: date-time
 
-    # ===== Gallery =====
+    # Gallery
     Gallery:
       type: object
       properties:
         id:
           type: string
           format: uuid
-          example: xyz-001-uuid
+          example: d0085599-401d-4a21-aafa-160f0181c484
         title:
           type: string
-          example: Foto ICC 2024
+          example: ICC 2024 event photo
         image_url:
           type: string
           example: /uploads/gallery/1234567890_abc12345.jpg
@@ -215,7 +215,7 @@ components:
       properties:
         title:
           type: string
-          example: Foto ICC 2024
+          example: ICC 2024 event photo
         image_url:
           type: string
           example: /uploads/gallery/1234567890_abc12345.jpg
@@ -233,7 +233,7 @@ components:
       properties:
         title:
           type: string
-          example: Foto ICC 2024 Updated
+          example: Updated ICC 2024 event photo
         image_url:
           type: string
         category:
@@ -243,7 +243,7 @@ components:
           type: string
           format: uuid
 
-    # ===== Common Response =====
+    # Common responses
     SuccessResponse:
       type: object
       properties:
@@ -261,14 +261,14 @@ components:
           example: error message
 
 paths:
-  # ===== Health =====
+  # Health
   /health:
     get:
-      summary: Health Check
-      description: Cek status API
+      summary: Health check
+      description: Check whether the API server is running.
       responses:
         "200":
-          description: API berjalan normal
+          description: API is running
           content:
             application/json:
               schema:
@@ -279,14 +279,14 @@ paths:
                     example: ok
                   message:
                     type: string
-                    example: Himatif API is running
+                    example: Backend is running
 
-  # ===== Auth =====
+  # Authentication
   /api/v1/admin/users:
     post:
       tags: [Auth]
       summary: Create another admin
-      description: Membuat akun admin baru; hanya dapat dipanggil oleh admin terautentikasi.
+      description: Create an administrator account. Requires a valid administrator JWT.
       security:
         - BearerAuth: []
       requestBody:
@@ -297,7 +297,7 @@ paths:
               $ref: "#/components/schemas/RegisterInput"
       responses:
         "201":
-          description: Register berhasil
+          description: Administrator created
           content:
             application/json:
               schema:
@@ -318,31 +318,33 @@ paths:
                       role:
                         type: string
         "400":
-          description: Validasi input gagal
+          description: Input validation failed
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
-          description: Token tidak ada atau tidak valid
+          description: Missing or invalid token
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "403":
-          description: Role bukan admin
+          description: Caller does not have the administrator role
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+
         "409":
-          description: Email sudah terdaftar
+          description: Email is already registered
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "500":
-          description: Gagal membuat akun admin
+          description: Failed to create administrator
           content:
             application/json:
               schema:
@@ -351,8 +353,8 @@ paths:
   /api/v1/auth/login:
     post:
       tags: [Auth]
-      summary: Login Admin
-      description: Login untuk mendapatkan JWT token
+      summary: Administrator login
+      description: Authenticate an administrator and receive a JWT access token.
       requestBody:
         required: true
         content:
@@ -361,27 +363,33 @@ paths:
               $ref: "#/components/schemas/LoginInput"
       responses:
         "200":
-          description: Login berhasil
+          description: Login successful
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
         "401":
-          description: Email atau password salah
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Request body is invalid or missing required fields
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  # ===== Events Public =====
+  # Public events
   /api/v1/events:
     get:
       tags: [Events]
-      summary: Get All Events
-      description: Ambil semua data kegiatan (public)
+      summary: List events
+      description: Return all events. No authentication is required.
       responses:
         "200":
-          description: List semua event
+          description: Event list
           content:
             application/json:
               schema:
@@ -395,8 +403,8 @@ paths:
   /api/v1/events/{slug}:
     get:
       tags: [Events]
-      summary: Get Event by Slug
-      description: Ambil detail kegiatan berdasarkan slug (public)
+      summary: Get event by slug
+      description: Return an event identified by its slug. No authentication is required.
       parameters:
         - name: slug
           in: path
@@ -406,7 +414,7 @@ paths:
           example: informatika-coding-camp-2024-abc12345
       responses:
         "200":
-          description: Detail event
+          description: Event details
           content:
             application/json:
               schema:
@@ -415,18 +423,18 @@ paths:
                   data:
                     $ref: "#/components/schemas/Event"
         "404":
-          description: Event tidak ditemukan
+          description: Event not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  # ===== Galleries Public =====
+  # Public galleries
   /api/v1/galleries:
     get:
       tags: [Galleries]
-      summary: Get All Galleries
-      description: Ambil semua data galeri, bisa filter by category
+      summary: List gallery items
+      description: Return all gallery items. Optionally filter by category.
       parameters:
         - name: category
           in: query
@@ -437,7 +445,7 @@ paths:
           example: kegiatan
       responses:
         "200":
-          description: List semua gallery
+          description: Gallery item list
           content:
             application/json:
               schema:
@@ -447,12 +455,18 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Gallery"
+        "400":
+          description: The category is not supported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/v1/galleries/{id}:
     get:
       tags: [Galleries]
-      summary: Get Gallery by ID
-      description: Ambil detail galeri berdasarkan ID (public)
+      summary: Get gallery item by ID
+      description: Return a gallery item by UUID. No authentication is required.
       parameters:
         - name: id
           in: path
@@ -462,7 +476,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Detail gallery
+          description: Gallery item details
           content:
             application/json:
               schema:
@@ -471,22 +485,22 @@ paths:
                   data:
                     $ref: "#/components/schemas/Gallery"
         "404":
-          description: Gallery tidak ditemukan
+          description: Gallery item not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  # ===== Admin Events =====
+  # Admin events
   /api/v1/admin/events:
     get:
       tags: [Admin Events]
-      summary: Get All Events (Admin)
+      summary: List events (admin)
       security:
         - BearerAuth: []
       responses:
         "200":
-          description: List semua event
+          description: Event list
           content:
             application/json:
               schema:
@@ -497,7 +511,13 @@ paths:
                     items:
                       $ref: "#/components/schemas/Event"
         "401":
-          description: Unauthorized
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
           content:
             application/json:
               schema:
@@ -505,7 +525,7 @@ paths:
 
     post:
       tags: [Admin Events]
-      summary: Create Event
+      summary: Create event
       security:
         - BearerAuth: []
       requestBody:
@@ -516,7 +536,7 @@ paths:
               $ref: "#/components/schemas/CreateEventInput"
       responses:
         "201":
-          description: Event berhasil dibuat
+          description: Event created
           content:
             application/json:
               schema:
@@ -528,18 +548,27 @@ paths:
                   data:
                     $ref: "#/components/schemas/Event"
         "400":
-          description: Validasi gagal
+          description: Invalid event input
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
-          description: Unauthorized
-
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/admin/events/{id}:
     get:
       tags: [Admin Events]
-      summary: Get Event by ID (Admin)
+      summary: Get event by ID (admin)
       security:
         - BearerAuth: []
       parameters:
@@ -551,7 +580,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Detail event
+          description: Event details
           content:
             application/json:
               schema:
@@ -560,11 +589,27 @@ paths:
                   data:
                     $ref: "#/components/schemas/Event"
         "404":
-          description: Event tidak ditemukan
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     put:
       tags: [Admin Events]
-      summary: Update Event
+      summary: Update event
       security:
         - BearerAuth: []
       parameters:
@@ -582,7 +627,7 @@ paths:
               $ref: "#/components/schemas/UpdateEventInput"
       responses:
         "200":
-          description: Event berhasil diupdate
+          description: Event updated
           content:
             application/json:
               schema:
@@ -594,14 +639,28 @@ paths:
                   data:
                     $ref: "#/components/schemas/Event"
         "400":
-          description: Validasi gagal
-        "404":
-          description: Event tidak ditemukan
+          description: Invalid input or event not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     delete:
       tags: [Admin Events]
-      summary: Delete Event
-      description: Hapus event beserta semua galleries yang berelasi
+      summary: Delete event
+      description: Delete an event and its related gallery records.
       security:
         - BearerAuth: []
       parameters:
@@ -613,7 +672,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Event berhasil dihapus
+          description: Event deleted
           content:
             application/json:
               schema:
@@ -623,20 +682,34 @@ paths:
                     type: string
                     example: event deleted successfully
         "400":
-          description: Event tidak ditemukan
+          description: Delete failed, including when the event does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "401":
-          description: Unauthorized
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
-  # ===== Admin Galleries =====
+  # Admin galleries
   /api/v1/admin/galleries:
     get:
       tags: [Admin Galleries]
-      summary: Get All Galleries (Admin)
+      summary: List gallery items (admin)
       security:
         - BearerAuth: []
       responses:
         "200":
-          description: List semua gallery
+          description: Gallery item list
           content:
             application/json:
               schema:
@@ -647,11 +720,21 @@ paths:
                     items:
                       $ref: "#/components/schemas/Gallery"
         "401":
-          description: Unauthorized
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     post:
       tags: [Admin Galleries]
-      summary: Create Gallery
+      summary: Create gallery item
       security:
         - BearerAuth: []
       requestBody:
@@ -662,7 +745,7 @@ paths:
               $ref: "#/components/schemas/CreateGalleryInput"
       responses:
         "201":
-          description: Gallery berhasil dibuat
+          description: Gallery item created
           content:
             application/json:
               schema:
@@ -674,14 +757,28 @@ paths:
                   data:
                     $ref: "#/components/schemas/Gallery"
         "400":
-          description: Validasi gagal
+          description: Invalid gallery input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "401":
-          description: Unauthorized
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/v1/admin/galleries/{id}:
     get:
       tags: [Admin Galleries]
-      summary: Get Gallery by ID (Admin)
+      summary: Get gallery item by ID (admin)
       security:
         - BearerAuth: []
       parameters:
@@ -693,7 +790,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Detail gallery
+          description: Gallery item details
           content:
             application/json:
               schema:
@@ -702,11 +799,27 @@ paths:
                   data:
                     $ref: "#/components/schemas/Gallery"
         "404":
-          description: Gallery tidak ditemukan
+          description: Gallery item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     put:
       tags: [Admin Galleries]
-      summary: Update Gallery
+      summary: Update gallery item
       security:
         - BearerAuth: []
       parameters:
@@ -724,7 +837,7 @@ paths:
               $ref: "#/components/schemas/UpdateGalleryInput"
       responses:
         "200":
-          description: Gallery berhasil diupdate
+          description: Gallery item updated
           content:
             application/json:
               schema:
@@ -736,14 +849,28 @@ paths:
                   data:
                     $ref: "#/components/schemas/Gallery"
         "400":
-          description: Validasi gagal
-        "404":
-          description: Gallery tidak ditemukan
+          description: Invalid input or gallery item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     delete:
       tags: [Admin Galleries]
-      summary: Delete Gallery
-      description: Hapus gallery beserta file gambar fisiknya
+      summary: Delete gallery item
+      description: Delete the gallery record. The uploaded image file is not deleted.
       security:
         - BearerAuth: []
       parameters:
@@ -755,7 +882,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Gallery berhasil dihapus
+          description: Gallery item deleted
           content:
             application/json:
               schema:
@@ -765,16 +892,30 @@ paths:
                     type: string
                     example: gallery deleted successfully
         "400":
-          description: Gallery tidak ditemukan
+          description: Delete failed, including when the gallery item does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "401":
-          description: Unauthorized
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
-  # ===== Upload =====
+  # Image upload
   /api/v1/admin/upload:
     post:
       tags: [Upload]
-      summary: Upload Image
-      description: Upload file gambar ke server, return URL untuk dipakai di gallery atau event thumbnail
+      summary: Upload an image
+      description: Upload an image to the gallery upload directory and return its public path.
       security:
         - BearerAuth: []
       requestBody:
@@ -788,10 +929,10 @@ paths:
                 image:
                   type: string
                   format: binary
-                  description: File gambar (jpg, jpeg, png, webp) max 5MB
+                  description: JPG, JPEG, PNG, or WEBP image. Maximum size is 5 MiB.
       responses:
         "200":
-          description: Upload berhasil
+          description: Image uploaded
           content:
             application/json:
               schema:
@@ -804,10 +945,20 @@ paths:
                     type: string
                     example: /uploads/gallery/1234567890_abc12345.jpg
         "400":
-          description: File tidak valid atau ukuran melebihi batas
+          description: Missing file, unsupported extension, or file exceeds 5 MiB
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
-          description: Unauthorized
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Caller does not have the administrator role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
