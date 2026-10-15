@@ -283,5 +283,5 @@ database integration checks—never run tests against production data.
 
 ## License
 
-No license file is currently provided in this repository. Contact the project
-maintainers before redistributing or reusing project materials.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for the
+full license text.
